@@ -64,64 +64,185 @@ if (isset($_POST['login']) && !$lockout) {
     }
 }
 ?>
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Velohertz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Desain Glassmorphism sesuai tema Velohertz */
-        body { margin: 0; font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #0f172a; }
-        .container { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px); padding: 45px 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.5); border-top: 5px solid #0f52ba; }
-        .logo { color: #0f52ba; font-style: italic; font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; }
-        h2 { font-size: 22px; margin-bottom: 25px; margin-top: 0; }
-        .input-group { margin-bottom: 20px; text-align: left; position: relative; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
-        .input-group input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255, 255, 255, 0.7); box-sizing: border-box; outline: none; transition: 0.3s; font-size: 14px; font-family: inherit; }
-        .input-group input:focus { border-color: #0f52ba; background: #ffffff; box-shadow: 0 0 0 4px rgba(15,82,186,0.1); }
-        .password-wrapper { position: relative; }
-        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; color: #475569; padding: 0; }
-        .forgot-pass { text-align: right; margin-top: 10px; margin-bottom: 25px; }
-        .forgot-pass a { color: #0f52ba; font-size: 13px; text-decoration: none; font-weight: 600; }
-        .btn-submit { width: 100%; padding: 14px; background-color: #0f52ba; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(15,82,186,0.2); font-family: inherit; }
-        .btn-submit:hover { background-color: #0c4399; transform: translateY(-2px); }
-        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-        .footer-link { margin-top: 25px; font-size: 14px; color: #475569; }
-        .footer-link a { color: #0f52ba; font-weight: 600; text-decoration: none; }
-        .error-msg { background: rgba(254,226,226,0.9); color: #e53e3e; font-size: 13px; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #fecaca; font-weight: 500; text-align: left;}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        /* Background Langit Cerah */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Judul Velohertz: Gradien Biru Kalem ke Biru Muda */
+        .velohertz-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 38px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .error-msg {
+            background-color: #ffe8e8;
+            color: #ff4757;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #ffcccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .input-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            padding-right: 45px; 
+            border: 2px solid #e1e5ee;
+            border-radius: 16px; 
+            font-size: 15px;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .login-container input:focus {
+            border-color: #3b71ca;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.2);
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+            transition: 0.2s;
+            color: #888;
+        }
+        
+        .toggle-password:hover {
+            color: #3b71ca;
+        }
+
+        /* --- Link Lupa Password --- */
+        .forgot-link {
+            display: block;
+            text-align: right;
+            margin-top: -10px; /* Biar deket sama kotak password */
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #3b71ca;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-link:hover {
+            text-decoration: underline;
+            color: #2a5298;
+        }
+
+        /* Tombol Masuk */
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 16px; 
+            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .login-container button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 113, 202, 0.3);
+        }
+        
+        .login-container button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* --- Link Daftar (Hijau Link Cerah) --- */
+        .register-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #10b981; /* Warna hijau cerah web link / Emerald */
+            text-decoration: underline; 
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .register-link:hover { 
+            color: #059669; /* Hijau yang lebih pekat dikit saat di-hover */
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Velohertz</div>
-        <h2>Masuk ke Akunmu</h2>
+
+    <div class="login-container">
+        <h2 class="velohertz-title">Velohertz</h2>
         
-        <?php echo $pesan; ?>
-
+        <?= $pesan ?>
+        
         <form action="" method="POST">
-            <div class="input-group">
-                <label>Email atau Username</label>
-                <input type="text" name="username" required placeholder="Email atau username" <?php if($lockout) echo "disabled"; ?> />
+            <div class="input-wrapper">
+                <input type="text" name="username" placeholder="Username atau Email" required>
             </div>
-
-            <div class="input-group">
-                <label>Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="login-password" name="password" required placeholder="Password" <?php if($lockout) echo "disabled"; ?> />
-                    <button type="button" class="toggle-password" onclick="toggleVisibility('login-password', 'eye-icon')" id="eye-icon">🙉</button>
-                </div>
+            
+            <div class="input-wrapper">
+                <input type="password" name="password" id="passInput" placeholder="Password" required>
+                <span class="toggle-password" id="passIcon" onclick="toggleVisibility('passInput', 'passIcon')">🙉</span>
             </div>
-
-            <div class="forgot-pass">
-                <a href="lupa_password.php">Lupa password?</a>
-            </div>
-
-            <button type="submit" name="login" class="btn-submit" <?php if($lockout) echo "disabled"; ?>>Masuk</button>
+            
+            <a href="lupa_password.php" class="forgot-link">Lupa Password?</a>
+            
+            <button type="submit" name="login" <?= $lockout ? 'disabled' : '' ?>>Masuk</button>
         </form>
-
-        <div class="footer-link">Belum punya akun? <a href="register.php">Daftar di sini</a></div>
+        
+        <a href="register.php" class="register-link">Belum punya akun? Daftar disini</a>
     </div>
 
     <script>
@@ -137,5 +258,6 @@ if (isset($_POST['login']) && !$lockout) {
             }
         }
     </script>
+
 </body>
 </html>

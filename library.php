@@ -1,41 +1,53 @@
 <?php
 session_start();
-if (!isset($_SESSION['username'])) { header("Location: login.php"); exit(); }
+// Cek Login: Kalau nggak ada session, lempar ke login.php
+if (!isset($_SESSION['username'])) { 
+    header("Location: login.php"); 
+    exit(); 
+}
 include 'koneksi.php';
 
 $username = $_SESSION['username'];
 $pesan = "";
 
-// Ambil UID user yang sedang login
+// 1. AMBIL UID USER (LOGIC PHP ASLI)
 $sql_user = "SELECT uid FROM User WHERE uname='$username'";
 $res_user = $conn->query($sql_user);
-if ($res_user->num_rows > 0) {
+if ($res_user && $res_user->num_rows > 0) {
     $uid = $res_user->fetch_assoc()['uid'];
 } else {
-    echo "User tidak valid!";
+    echo "User tidak ditemukan di database!";
     exit();
 }
 
-// 1. LOGIKA BUAT PLAYLIST BARU
+// 2. LOGIKA BUAT PLAYLIST BARU
 if (isset($_POST['buat_playlist'])) {
     $ptitle = $conn->real_escape_string(trim($_POST['nama_playlist']));
     $pdate = date('Y-m-d H:i:s'); 
     if (!empty($ptitle)) {
-        $conn->query("INSERT INTO playlist (ptitle, pdate, pavailable, pdesc, uid) VALUES ('$ptitle', '$pdate', 1, 'Kumpulan melodi favoritku', '$uid')");
-        $pesan = "<div style='color: #10b981; background: rgba(209,250,229,0.8); padding: 15px; border-radius: 12px; border: 1px solid #a7f3d0; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 15px rgba(16,185,129,0.1);'><i class='fa-solid fa-circle-check'></i> Playlist '$ptitle' berhasil dibuat!</div>";
+        $insert_pl = "INSERT INTO playlist (ptitle, pdate, pavailable, pdesc, uid) 
+                      VALUES ('$ptitle', '$pdate', 1, 'Kumpulan musik favorit saya', '$uid')";
+        if ($conn->query($insert_pl)) {
+            $pesan = "<div class='success-msg'><i class='fa-solid fa-circle-check'></i> Playlist '$ptitle' berhasil dibuat!</div>";
+        }
     }
 }
 
-// 2. LOGIKA HAPUS PLAYLIST
+// 3. LOGIKA HAPUS PLAYLIST
 if (isset($_POST['hapus_playlist'])) {
     $pid_hapus = $conn->real_escape_string($_POST['pid_hapus']);
+    // Hapus isinya dulu baru playlistnya (Foreign Key Safety)
     $conn->query("DELETE FROM playlistcontain WHERE pid='$pid_hapus'");
     $conn->query("DELETE FROM playlist WHERE pid='$pid_hapus' AND uid='$uid'");
-    $pesan = "<div style='color: #e53e3e; background: rgba(254,226,226,0.8); padding: 15px; border-radius: 12px; border: 1px solid #fecaca; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 15px rgba(229,62,62,0.1);'><i class='fa-solid fa-trash'></i> Playlist telah dihapus.</div>";
+    $pesan = "<div class='error-msg'><i class='fa-solid fa-trash'></i> Playlist telah dihapus dari koleksi.</div>";
 }
 
-// 3. AMBIL DAFTAR PLAYLIST MILIK USER INI
-$sql_tampil = "SELECT p.*, (SELECT t.ttitle FROM playlistcontain pc JOIN Track t ON pc.tid = t.tid WHERE pc.pid = p.pid LIMIT 1) AS sample_track FROM playlist p WHERE p.uid='$uid' ORDER BY p.pdate DESC";
+// 4. AMBIL DAFTAR PLAYLIST UNTUK DITAMPILKAN
+$sql_tampil = "SELECT p.*, 
+              (SELECT t.ttitle FROM playlistcontain pc 
+               JOIN Track t ON pc.tid = t.tid 
+               WHERE pc.pid = p.pid LIMIT 1) AS sample_track 
+               FROM playlist p WHERE p.uid='$uid' ORDER BY p.pdate DESC";
 $result_playlist = $conn->query($sql_tampil);
 ?>
 <!DOCTYPE html>
@@ -44,223 +56,241 @@ $result_playlist = $conn->query($sql_tampil);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koleksi Kamu - Velohertz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary: #0f52ba;
-            --app-bg: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-            --glass-bg: rgba(255, 255, 255, 0.6);
+            --primary: #3b71ca;
+            --primary-dark: #2a5298;
+            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #0f172a;
-            --text-muted: #475569;
+            --text-main: #1e3c72;
+            --text-muted: #64748b;
+            --emerald: #10b981;
         }
         
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--app-bg); background-attachment: fixed; color: var(--text-main); display: flex; overflow-x: hidden; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
+            background: var(--app-bg); background-attachment: fixed; 
+            color: var(--text-main); display: flex; overflow-x: hidden; 
+        }
 
-        /* SIDEBAR KACA */
-        .sidebar { width: 240px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 30px 20px; height: 100vh; position: fixed; z-index: 100; box-sizing: border-box; border-right: 1px solid rgba(255, 255, 255, 0.4); display: flex; flex-direction: column; box-shadow: 4px 0 30px rgba(0,0,0,0.03); }
-        .sidebar h2 { color: var(--primary); margin-bottom: 30px; font-style: italic; font-size: 26px; margin-top: 0; padding-left: 10px; }
-        .sidebar a { display: flex; align-items: center; color: var(--text-muted); text-decoration: none; margin: 5px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 12px; }
-        .sidebar a i { margin-right: 12px; font-size: 18px; }
-        .sidebar a:hover, .sidebar a.active { background: rgba(255, 255, 255, 0.5); color: var(--primary); transform: translateX(4px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255, 255, 255, 0.6); }
+        /* --- SIDEBAR (SINKRON DENGAN INDEX) --- */
+        .sidebar { 
+            width: 260px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); 
+            padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.hidden { transform: translateX(-100%); }
         
-        .logout-btn { margin-top: auto; background: rgba(255, 255, 255, 0.3); color: #e53e3e !important; border: 1px solid rgba(254, 215, 215, 0.6); justify-content: center; }
-        .logout-btn:hover { background: #e53e3e !important; color: white !important; }
+        .sidebar h2 { 
+            font-family: 'Outfit', sans-serif; color: var(--primary); 
+            margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
+            text-align: center; line-height: 45px; 
+        }
 
-        .main-content { margin-left: 240px; padding: 40px; width: calc(100% - 240px); margin-bottom: 120px; box-sizing: border-box; }
+        .sidebar a { 
+            display: flex; align-items: center; color: var(--text-main); 
+            text-decoration: none; margin: 8px 0; font-weight: 600; 
+            transition: 0.3s; padding: 12px 15px; border-radius: 16px; 
+        }
+
+        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+
+        /* --- HAMBURGER MENU (POSISI SAMA DENGAN INDEX) --- */
+        .hamburger-menu {
+            position: fixed; top: 32px; left: 25px; z-index: 1100;
+            background: var(--primary); color: white; border: none;
+            width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            transition: 0.3s;
+        }
+        .hamburger-menu:hover { transform: scale(1.05); background: var(--primary-dark); }
+
+        /* --- MAIN CONTENT (ANTI LENGKET) --- */
+        .main-content { 
+            margin-left: 280px; padding: 40px 60px; width: 100%;
+            transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
+        }
+
+        .main-content.full-width { margin-left: 0; padding-left: 90px; }
+        .content-container { max-width: 1100px; margin: 0 auto; }
         
-        .header { margin-bottom: 40px; }
-        .header h2 { margin: 0; color: var(--text-main); font-size: 28px; font-weight: 800; letter-spacing: -0.5px;}
+        .header { margin-bottom: 30px; margin-top: 10px; }
+        .header h2 { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; }
 
-        /* BOX INPUT (Lebih Clean & Minimalis) */
+        /* --- FORM BUAT PLAYLIST --- */
         .form-box { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(15px); 
-            padding: 30px; 
-            border-radius: 20px; 
-            border: 1px solid var(--glass-border); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            margin-bottom: 45px;
-            max-width: 600px;
+            background: var(--glass-bg); padding: 30px; border-radius: 24px; 
+            border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            margin-bottom: 45px; max-width: 600px;
         }
-        .form-box form {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+        .form-box h3 { font-family: 'Outfit', sans-serif; margin-top: 0; margin-bottom: 20px; font-size: 20px; font-weight: 800; }
+        
+        .input-playlist { 
+            flex: 1; padding: 14px 20px; border-radius: 12px; border: 2px solid #e1e5ee; 
+            background: #fff; font-size: 15px; outline: none; transition: 0.3s; font-family: inherit;
         }
-        .search-box { 
-            flex: 1;
-            padding: 14px 20px; 
-            border-radius: 12px; 
-            border: 1px solid var(--glass-border); 
-            background: rgba(255,255,255,0.7); 
-            font-size: 15px; 
-            outline: none; 
-            transition: 0.3s; 
-            font-family: inherit;
-            color: var(--text-main);
+        .input-playlist:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); }
+        
+        .btn-create { 
+            background: var(--emerald); color: white; border: none; padding: 14px 30px; 
+            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 15px;
         }
-        .search-box:focus { background: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15,82,186,0.1); }
-        .btn-submit { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 14px 30px; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            font-family: inherit; 
-            white-space: nowrap;
-            box-shadow: 0 4px 15px rgba(15,82,186,0.2); 
-            font-size: 15px;
-        }
-        .btn-submit:hover { background: #0c4399; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,82,186,0.3); }
+        .btn-create:hover { background: #059669; transform: translateY(-2px); }
 
-        /* GRID KARTU PLAYLIST PREMIUM (Tampilan Penuh ala Spotify) */
-        .playlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
-        .playlist-wrapper { position: relative; display: block; }
+        /* --- GRID PLAYLIST --- */
+        .playlist-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 30px; margin-bottom: 100px;
+        }
+        .playlist-wrapper { position: relative; }
         
         .playlist-card { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(15px); 
-            border-radius: 20px; 
-            border: 1px solid var(--glass-border); 
-            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
-            text-decoration: none; 
-            color: var(--text-main); 
-            display: flex; 
-            flex-direction: column;
-            overflow: hidden; /* Fotonya bakal full ngikutin lengkungan box */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
+            transition: 0.3s; text-decoration: none; color: var(--text-main); display: flex; 
+            flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        .playlist-card:hover { 
-            transform: translateY(-10px); 
-            background: rgba(255,255,255,0.9); 
-            border-color: rgba(255,255,255,0.8); 
-            box-shadow: 0 20px 40px rgba(15,82,186,0.15); 
-        }
+        .playlist-card:hover { transform: translateY(-8px); background: #fff; border-color: var(--primary); }
         
-        .playlist-cover-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .playlist-icon { 
-            width: 100%; 
-            height: 180px; 
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); 
-            color: var(--primary); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 60px; 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+        .playlist-img { width: 100%; height: 200px; object-fit: cover; }
+        .playlist-icon-empty { 
+            width: 100%; height: 200px; background: #e0f2fe; color: var(--primary); 
+            display: flex; align-items: center; justify-content: center; font-size: 60px; 
         }
         
         .playlist-info { padding: 20px; }
-        .playlist-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
-        .playlist-desc { font-size: 14px; color: var(--text-muted); font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;}
+        .playlist-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .playlist-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-        /* TOMBOL HAPUS MELAYANG (Desain Halus) */
+        /* --- TOMBOL HAPUS --- */
         .btn-delete-pl { 
-            position: absolute; 
-            top: 15px; 
-            right: 15px; 
-            background: rgba(255,255,255,0.95); 
-            color: #e53e3e; 
-            border: none; 
-            border-radius: 50%; 
-            width: 38px; 
-            height: 38px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 10; 
-            transition: 0.3s; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
-            font-size: 15px;
+            position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.9); 
+            color: #ff4757; border: none; border-radius: 50%; width: 35px; height: 35px; 
+            cursor: pointer; z-index: 10; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .btn-delete-pl:hover { background: #e53e3e; color: white; transform: scale(1.15); box-shadow: 0 8px 20px rgba(229,62,62,0.3); }
+        .btn-delete-pl:hover { background: #ff4757; color: white; transform: scale(1.1); }
 
-        @media screen and (max-width: 768px) {
-            .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; padding: 15px 20px; overflow-x: auto; border-bottom: 1px solid var(--glass-border); border-right: none;}
-            .main-content { margin-left: 0; width: 100%; padding: 20px; }
-            .form-box form { flex-direction: column; align-items: stretch; }
-            .btn-submit { width: 100%; }
+        /* --- ALERTS --- */
+        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .error-msg { background: #ffe8e8; color: #ff4757; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 220px; }
+            .main-content { margin-left: 0; padding: 20px; padding-top: 80px; }
+            .main-content.full-width { padding-left: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>🎵 Velohertz</h2>
-        <a href="index.php"><i class="fa-solid fa-house" style="width: 25px;"></i> Beranda</a>
-        <a href="search.php"><i class="fa-solid fa-magnifying-glass" style="width: 25px;"></i> Cari</a>
-        <a href="library.php" class="active"><i class="fa-solid fa-book" style="width: 25px;"></i> Koleksi Kamu</a>
-        <a href="profile.php"><i class="fa-solid fa-user" style="width: 25px;"></i> Profil</a>
-        
-        <?php if($username == 'admin'): ?>
-            <a href="admin.php" style="color: #e53e3e;"><i class="fa-solid fa-shield-halved" style="width: 25px;"></i> Admin Panel</a>
-        <?php endif; ?>
+    <button class="hamburger-menu" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
+    <div class="sidebar" id="sidebar">
+        <h2>Velohertz</h2>
+        <a href="index.php"><i class="fa-solid fa-house"></i> Beranda</a>
+        <a href="search.php"><i class="fa-solid fa-magnifying-glass"></i> Cari</a>
+        <a href="library.php" class="active"><i class="fa-solid fa-book"></i> Koleksi</a>
+        <a href="profile.php"><i class="fa-solid fa-user"></i> Profil</a>
         <a href="logout.php" class="logout-btn" onclick="return confirm('Apakah kamu yakin ingin keluar?');"><i class="fa-solid fa-right-from-bracket"></i> Keluar</a>
     </div>
 
-    <div class="main-content">
-        <div class="header">
-            <h2>Koleksi Playlist Kamu</h2>
-        </div>
+    <div class="main-content" id="mainContent">
+        <div class="content-container">
+            <div class="header">
+                <h2>Koleksi Kamu</h2>
+            </div>
 
-        <?php echo $pesan; ?>
+            <?php echo $pesan; ?>
 
-        <div class="form-box">
-            <h3 style="margin-top: 0; margin-bottom: 20px; font-weight: 800; font-size: 20px;">Buat Playlist Baru ✨</h3>
-            <form action="" method="POST">
-                <input type="text" name="nama_playlist" class="search-box" placeholder="Beri nama playlistmu (Misal: Vibes Pagi)..." required>
-                <button type="submit" name="buat_playlist" class="btn-submit"><i class="fa-solid fa-plus"></i> Buat</button>
-            </form>
-        </div>
+            <div class="form-box">
+                <h3>Buat Playlist Baru ✨</h3>
+                <form action="" method="POST" style="display: flex; gap: 12px;">
+                    <input type="text" name="nama_playlist" class="input-playlist" placeholder="Nama koleksi kamu..." required>
+                    <button type="submit" name="buat_playlist" class="btn-create">Buat Playlist</button>
+                </form>
+            </div>
 
-        <div class="playlist-grid">
-            <?php
-            if ($result_playlist && $result_playlist->num_rows > 0) {
-                while($row = $result_playlist->fetch_assoc()) {
-                    echo "<div class='playlist-wrapper'>";
-                    
-                    // Tombol Hapus Playlist (Melayang di ujung kanan atas foto)
-                    echo "<form action='' method='POST' style='margin:0;'>";
-                    echo "<input type='hidden' name='pid_hapus' value='" . $row["pid"] . "'>";
-                    echo "<button type='submit' name='hapus_playlist' class='btn-delete-pl' title='Hapus Playlist' onclick=\"return confirm('Yakin ingin menghapus playlist ini?');\"><i class='fa-solid fa-trash'></i></button>";
-                    echo "</form>";
+            <div class="playlist-grid">
+                <?php
+                if ($result_playlist && $result_playlist->num_rows > 0) {
+                    while($row = $result_playlist->fetch_assoc()) {
+                        echo "<div class='playlist-wrapper'>";
+                        
+                        // Tombol Hapus (Floating)
+                        echo "<form action='' method='POST' style='margin:0;'>";
+                        echo "<input type='hidden' name='pid_hapus' value='" . $row["pid"] . "'>";
+                        echo "<button type='submit' name='hapus_playlist' class='btn-delete-pl' onclick=\"return confirm('Hapus playlist ini?');\"><i class='fa-solid fa-trash'></i></button>";
+                        echo "</form>";
 
-                    // Kartu Playlist
-                    echo "<a href='view_playlist.php?pid=" . $row["pid"] . "' class='playlist-card'>";
-                    
-                    // Logic Gambar (Full width, nggak ada kotak putih di dalem kotak lagi)
-                    if (!empty($row['sample_track'])) {
-                        $pl_img = "https://picsum.photos/seed/" . urlencode($row['pid']) . "/300/300";
-                        echo "<img src='$pl_img' class='playlist-cover-img'>";
-                    } else {
-                        echo "<div class='playlist-icon'><i class='fa-solid fa-music'></i></div>";
+                        // Link ke View Playlist
+                        echo "<a href='view_playlist.php?pid=" . $row["pid"] . "' class='playlist-card'>";
+                        
+                        // Gambar Unik pakai PID
+                        if (!empty($row['sample_track'])) {
+                            echo "<img src='https://picsum.photos/seed/playlist_" . $row['pid'] . "/300/300' class='playlist-img' alt='Cover'>";
+                        } else {
+                            echo "<div class='playlist-icon-empty'><i class='fa-solid fa-music'></i></div>";
+                        }
+                        
+                        echo "<div class='playlist-info'>";
+                        echo "<div class='playlist-title'>" . htmlspecialchars($row["ptitle"]) . "</div>";
+                        echo "<div class='playlist-desc'>" . htmlspecialchars($row["pdesc"]) . "</div>";
+                        echo "</div>";
+                        
+                        echo "</a></div>";
                     }
-                    
-                    // Box Teks yang rapi di bawah gambar
-                    echo "<div class='playlist-info'>";
-                    echo "<div class='playlist-title'>" . htmlspecialchars($row["ptitle"]) . "</div>";
-                    echo "<div class='playlist-desc'>" . htmlspecialchars($row["pdesc"]) . "</div>";
-                    echo "</div>";
-                    
-                    echo "</a></div>";
+                } else {
+                    echo "<p style='color: var(--text-muted); font-weight: 500; grid-column: 1/-1;'>Kamu belum punya koleksi. Yuk buat playlist pertama kamu!</p>";
                 }
-            } else {
-                echo "<div style='color: var(--text-muted); font-weight: 600; font-size: 15px; grid-column: 1 / -1;'>Kamu belum punya playlist. Yuk bikin koleksimu sekarang!</div>";
-            }
-            ?>
+                ?>
+            </div>
         </div>
     </div>
 
+    <script>
+        // --- SCRIPT SIDEBAR ANTI PELUPA ---
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const state = localStorage.getItem('sidebarState'); // Cek ingatan browser
+    
+    // Kalau buka di HP, otomatis tutup sidebar biar layar lega
+    if (window.innerWidth <= 768) {
+        sidebar.classList.add('hidden');
+        mainContent.classList.add('full-width');
+    } 
+    // Kalau di laptop dan ingatan terakhirnya 'tertutup'
+    else if (state === 'hidden') {
+        sidebar.classList.add('hidden');
+        mainContent.classList.add('full-width');
+    }
+});
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('full-width');
+    
+    // Simpan status ke ingatan browser (Local Storage)
+    if (sidebar.classList.contains('hidden')) {
+        localStorage.setItem('sidebarState', 'hidden');
+    } else {
+        localStorage.setItem('sidebarState', 'visible');
+    }
+}
+    </script>
 </body>
 </html>

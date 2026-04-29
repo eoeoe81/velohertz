@@ -123,43 +123,114 @@ if (isset($_GET['cancel'])) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password - Velohertz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #0f172a; }
-        .container { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px); padding: 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.5); border-top: 5px solid #0f52ba; }
-        h2 { font-size: 22px; margin-bottom: 20px; margin-top: 0; color: #0f52ba; }
-        .input-group { margin-bottom: 15px; text-align: left; position: relative; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
-        .input-group input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255, 255, 255, 0.7); box-sizing: border-box; outline: none; transition: 0.3s; font-size: 14px; font-family: inherit; }
-        .input-group input:focus { border-color: #0f52ba; background: #ffffff; }
+        :root {
+            --primary: #3b71ca;
+            --primary-dark: #2a5298;
+            --emerald: #10b981;
+            --danger: #ff4757;
+            --text-main: #1e3c72;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            color: var(--text-main); 
+        }
+
+        .container { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(20px); 
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            border: 1px solid rgba(255,255,255,0.5); 
+        }
+
+        h2 { 
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px; 
+            margin-bottom: 25px; 
+            margin-top: 0; 
+            color: var(--primary); 
+            letter-spacing: -1px;
+        }
+
+        .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6; }
+
+        .input-group { margin-bottom: 20px; text-align: left; position: relative; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+        
+        .input-group input { 
+            width: 100%; padding: 14px 18px; border-radius: 16px; 
+            border: 2px solid #e1e5ee; background: #fff; 
+            outline: none; transition: 0.3s; font-size: 14px; font-family: inherit; 
+        }
+        .input-group input:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); 
+        }
         
         .password-wrapper { position: relative; }
-        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; color: #475569; padding: 0; }
+        .toggle-password { 
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+            background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); 
+        }
         
         /* CSS INDIKATOR PASSWORD */
-        .strength-meter { margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.7); border-left: 4px solid #535353; border-radius: 8px; text-align: left;}
-        .strength-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: white; margin-bottom: 5px; background: #535353;}
-        .recommendation { font-size: 12px; color: #475569; line-height: 1.4; }
+        .strength-meter { 
+            margin-top: 12px; padding: 15px; background: rgba(255,255,255,0.8); 
+            border-left: 4px solid #94a3b8; border-radius: 12px; text-align: left;
+        }
+        .strength-badge { 
+            display: inline-block; padding: 4px 10px; border-radius: 8px; 
+            font-size: 11px; font-weight: 700; color: white; margin-bottom: 8px; 
+            background: #94a3b8; letter-spacing: 1px;
+        }
+        .recommendation { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        .btn-submit { width: 100%; padding: 14px; background-color: #0f52ba; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-submit:hover { background-color: #0c4399; }
-        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .btn-submit { 
+            width: 100%; padding: 15px; background: var(--primary); 
+            color: white; border: none; border-radius: 16px; 
+            font-weight: 600; font-size: 15px; cursor: pointer; 
+            transition: 0.3s; margin-top: 10px; font-family: inherit;
+        }
+        .btn-submit:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 113, 202, 0.2); }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
         
-        .btn-cancel { display: block; font-size: 14px; color: #475569; text-decoration: none; font-weight: 600; margin-top: 15px;}
-        .btn-cancel:hover { color: #e53e3e; }
-        .error-msg { background: rgba(254,226,226,0.9); color: #e53e3e; font-size: 13px; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #fecaca; text-align: left;}
-        .success-msg { background: rgba(209,250,229,0.9); color: #10b981; font-size: 13px; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #a7f3d0; text-align: left;}
+        .btn-cancel { 
+            display: inline-block; font-size: 14px; color: var(--text-muted); 
+            text-decoration: underline; font-weight: 600; margin-top: 20px; transition: 0.3s;
+        }
+        .btn-cancel:hover { color: var(--danger); }
+
+        .error-msg { background: #ffe8e8; color: var(--danger); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid #ffcccc; text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500;}
+        .success-msg { background: #e8fff3; color: var(--emerald); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid #c2f3d6; text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500;}
     </style>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fa-solid fa-shield-halved"></i> Pemulihan Akun</h2>
+        <h2><i class="fa-solid fa-shield-halved"></i> Pemulihan</h2>
         
         <?php echo $pesan; ?>
 
         <?php if ($step == 1): ?>
-            <p style="font-size: 14px; color: #475569; margin-bottom: 20px;">Masukkan email akun Anda. Kami akan mengirimkan 6-digit OTP ke email tersebut.</p>
+            <p class="subtitle">Masukkan email akun Anda. Kami akan mengirimkan 6-digit OTP ke email tersebut.</p>
             <form action="" method="POST">
                 <div class="input-group">
                     <label>Email Terdaftar</label>
@@ -170,18 +241,18 @@ if (isset($_GET['cancel'])) {
             <a href="login.php" class="btn-cancel">Kembali ke Login</a>
 
         <?php elseif ($step == 2): ?>
-            <p style="font-size: 14px; color: #475569; margin-bottom: 20px;">Masukkan OTP yang telah dikirim ke <b><?php echo $_SESSION['reset_email']; ?></b></p>
+            <p class="subtitle">Masukkan OTP yang telah dikirim ke <br><strong style="color: var(--primary);"><?php echo $_SESSION['reset_email']; ?></strong></p>
             <form action="" method="POST">
                 <div class="input-group">
                     <label>Kode OTP (6 Angka)</label>
-                    <input type="number" name="otp" required placeholder="Contoh: 123456" style="text-align: center; font-size: 20px; letter-spacing: 5px;" />
+                    <input type="number" name="otp" required placeholder="Contoh: 123456" style="text-align: center; font-size: 24px; letter-spacing: 8px; font-weight: 600;" />
                 </div>
                 <button type="submit" name="verifikasi_otp" class="btn-submit">Verifikasi OTP</button>
             </form>
             <a href="?cancel=true" class="btn-cancel">Ganti Email</a>
 
         <?php elseif ($step == 3): ?>
-            <p style="font-size: 14px; color: #475569; margin-bottom: 20px;">Buat password baru yang kuat.</p>
+            <p class="subtitle">Buat password baru yang kuat dan aman.</p>
             <form action="" method="POST">
                 
                 <div class="input-group">
@@ -207,6 +278,7 @@ if (isset($_GET['cancel'])) {
 
                 <button type="submit" name="reset_password" id="btn-submit" class="btn-submit" disabled>Simpan Password Baru</button>
             </form>
+            <a href="?cancel=true" class="btn-cancel" style="color: var(--danger);">Batalkan Proses</a>
         <?php endif; ?>
     </div>
 
@@ -230,17 +302,17 @@ if (isset($_GET['cancel'])) {
 
             if (val.length === 0) {
                 strengthBadge.textContent = "KOSONG";
-                strengthBadge.style.backgroundColor = "#535353";
-                strengthBox.style.borderLeftColor = "#535353";
+                strengthBadge.style.backgroundColor = "#94a3b8";
+                strengthBox.style.borderLeftColor = "#94a3b8";
                 recommendation.textContent = syaratMutlak;
-                recommendation.style.color = "#475569";
+                recommendation.style.color = "#64748b";
                 btnSubmit.disabled = true;
             } else if (strength < 4) {
                 strengthBadge.textContent = "BELUM AMAN";
-                strengthBadge.style.backgroundColor = "#e91429";
-                strengthBox.style.borderLeftColor = "#e91429";
+                strengthBadge.style.backgroundColor = "#ff4757";
+                strengthBox.style.borderLeftColor = "#ff4757";
                 recommendation.innerHTML = "<b>Password ditolak.</b> Pastikan memenuhi semua " + syaratMutlak;
-                recommendation.style.color = "#e91429";
+                recommendation.style.color = "#ff4757";
                 btnSubmit.disabled = true; 
             } else if (strength === 4) {
                 strengthBadge.textContent = "SANGAT KUAT";

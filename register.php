@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt_cek->num_rows > 0) {
             $pesan = "<div class='error-msg'><i class='fa-solid fa-user-xmark'></i> Username atau Email sudah terdaftar!</div>";
         } else {
-            // 3. Validasi Regex Server (Mutlak & Rahasia)
+            // 3. Validasi Regex Server
             $uppercase = preg_match('@[A-Z]@', $password);
             $lowercase = preg_match('@[a-z]@', $password);
             $number    = preg_match('@[0-9]@', $password);
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // 4. BCRYPT HASHING
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-                // 5. Simpan ke DB (Tanpa masukin UID karena sudah Auto-Increment dari database)
+                // 5. Simpan ke DB
                 $stmt_insert = $conn->prepare("INSERT INTO user (uname, email, upassword) VALUES (?, ?, ?)");
                 $stmt_insert->bind_param("sss", $username, $email, $hashed_password);
 
@@ -55,36 +55,155 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Velohertz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #0f172a; }
-        .container { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px); padding: 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.5); border-top: 5px solid #0f52ba; }
-        h2 { font-size: 22px; margin-bottom: 20px; margin-top: 0; color: #0f52ba; }
-        .input-group { margin-bottom: 15px; text-align: left; position: relative; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
-        .input-group input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255, 255, 255, 0.7); box-sizing: border-box; outline: none; transition: 0.3s; font-size: 14px; font-family: inherit; }
-        .input-group input:focus { border-color: #0f52ba; background: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
+        }
+
+        .container { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px); 
+            padding: 40px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%;
+            max-width: 420px; 
+            text-align: center; 
+            border: 1px solid rgba(255,255,255,0.6); 
+        }
+
+        h2 { 
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 32px; 
+            margin-bottom: 25px; 
+            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: 600; color: #475569; }
+        
+        .input-group input { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 16px; 
+            border: 2px solid #e1e5ee; 
+            background: #f8f9fa; 
+            outline: none; 
+            transition: 0.3s; 
+            font-size: 14px; 
+        }
+
+        .input-group input:focus { 
+            border-color: #3b71ca; 
+            background: #ffffff; 
+            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1);
+        }
         
         .password-wrapper { position: relative; }
-        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; cursor: pointer; color: #475569; padding: 0; }
         
-        .strength-meter { margin-top: 10px; padding: 12px; background: rgba(255,255,255,0.7); border-left: 4px solid #535353; border-radius: 8px; text-align: left;}
-        .strength-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: white; margin-bottom: 5px; background: #535353;}
-        .recommendation { font-size: 12px; color: #475569; line-height: 1.4; }
+        .toggle-password { 
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: none; 
+            border: none; 
+            font-size: 20px; 
+            cursor: pointer; 
+            padding: 0; 
+        }
+        
+        /* Password Meter Style */
+        .strength-meter { 
+            margin-top: 10px; 
+            padding: 12px; 
+            background: white; 
+            border-left: 4px solid #cbd5e1; 
+            border-radius: 12px; 
+            font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .strength-badge { 
+            display: inline-block; 
+            padding: 2px 8px; 
+            border-radius: 6px; 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: white; 
+            margin-bottom: 6px; 
+            background: #94a3b8;
+            text-transform: uppercase;
+        }
 
-        .btn-submit { width: 100%; padding: 14px; background-color: #0f52ba; color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-submit:hover { background-color: #0c4399; }
-        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .recommendation { color: #64748b; line-height: 1.5; }
+
+        /* Tombol Daftar: Gradien Senada Login */
+        .btn-submit { 
+            width: 100%; 
+            padding: 15px; 
+            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 16px; 
+            font-weight: 600; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            margin-top: 10px; 
+        }
+
+        .btn-submit:hover:not(:disabled) { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 113, 202, 0.3);
+        }
+
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
         
-        .error-msg { background: rgba(254,226,226,0.9); color: #e53e3e; font-size: 13px; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #fecaca; text-align: left;}
-        .login-link { display: block; font-size: 14px; color: #475569; text-decoration: none; margin-top: 15px; font-weight: 600; }
-        .login-link:hover { color: #0f52ba; }
+        .error-msg { 
+            background: #ffe8e8; 
+            color: #ff4757; 
+            font-size: 13px; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #ffcccc; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Link Kembali: Hijau Emerald Cerah */
+        .login-link { 
+            display: inline-block; 
+            font-size: 14px; 
+            color: #10b981; 
+            text-decoration: underline; 
+            margin-top: 20px; 
+            font-weight: 500; 
+        }
+
+        .login-link:hover { color: #059669; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fa-solid fa-user-plus"></i> Daftar Akun</h2>
+        <h2>Daftar Akun</h2>
         
         <?php echo $pesan; ?>
 
@@ -108,7 +227,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <div class="strength-meter" id="strengthBox">
                     <span class="strength-badge" id="strengthBadge">KOSONG</span>
-                    <div class="recommendation" id="recommendation">Syarat wajib: Min. 8 Karakter, Huruf Besar, Angka, dan Simbol (!@#$).</div>
+                    <div class="recommendation" id="recommendation">Min. 8 Karakter, Huruf Besar, Angka, & Simbol (!@#$).</div>
                 </div>
             </div>
 
@@ -123,7 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" name="register" id="btn-submit" class="btn-submit" disabled>Daftar Sekarang</button>
         </form>
 
-        <a href="login.php" class="login-link">Sudah punya akun? Login di sini</a>
+        <a href="login.php" class="login-link">Sudah punya akun? Login disini</a>
     </div>
 
     <script>
@@ -141,28 +260,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (val.match(/[0-9]/)) strength += 1; 
             if (val.match(/[^a-zA-Z0-9]/)) strength += 1; 
 
-            const syaratMutlak = "Syarat wajib: Min. 8 Karakter, Huruf Besar, Angka, dan Simbol (!@#$).";
+            const syaratMutlak = "Wajib: Min. 8 Karakter, Huruf Besar, Angka, & Simbol.";
 
             if (val.length === 0) {
                 strengthBadge.textContent = "KOSONG";
-                strengthBadge.style.backgroundColor = "#535353";
-                strengthBox.style.borderLeftColor = "#535353";
+                strengthBadge.style.backgroundColor = "#94a3b8";
+                strengthBox.style.borderLeftColor = "#cbd5e1";
                 recommendation.textContent = syaratMutlak;
-                recommendation.style.color = "#475569";
                 btnSubmit.disabled = true;
             } else if (strength < 4) {
                 strengthBadge.textContent = "BELUM AMAN";
-                strengthBadge.style.backgroundColor = "#e91429";
-                strengthBox.style.borderLeftColor = "#e91429";
-                recommendation.innerHTML = "<b>Password ditolak.</b> Pastikan memenuhi semua " + syaratMutlak;
-                recommendation.style.color = "#e91429";
+                strengthBadge.style.backgroundColor = "#ff4757";
+                strengthBox.style.borderLeftColor = "#ff4757";
+                recommendation.innerHTML = "<b>Belum memenuhi syarat.</b> " + syaratMutlak;
                 btnSubmit.disabled = true; 
             } else if (strength === 4) {
                 strengthBadge.textContent = "SANGAT KUAT";
                 strengthBadge.style.backgroundColor = "#10b981";
                 strengthBox.style.borderLeftColor = "#10b981";
-                recommendation.textContent = "Sempurna! Password memenuhi standar keamanan.";
-                recommendation.style.color = "#10b981";
+                recommendation.textContent = "Mantap! Password sudah aman.";
                 btnSubmit.disabled = false; 
             }
         }
