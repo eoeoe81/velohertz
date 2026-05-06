@@ -99,203 +99,185 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #3b71ca;
-            --primary-dark: #2a5298;
-            --emerald: #10b981;
-            --danger: #ff4757;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-        }
-        
-        *, *::before, *::after { box-sizing: border-box; }
-
-        body { 
-            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
-            background: var(--app-bg); background-attachment: fixed; 
-            color: var(--text-main); display: flex; overflow-x: hidden; 
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar { 
-            width: 300px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); 
-            padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
-            transition: transform 0.4s ease; 
-        }
-
-        .sidebar.hidden { transform: translateX(-100%); }
-        
-        .sidebar h2 { 
-            font-family: 'Outfit', sans-serif; color: var(--primary); 
-            margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
-            text-align: center; line-height: 45px; 
-        }
-
-        .sidebar a { 
-            display: flex; align-items: center; color: var(--text-main); 
-            text-decoration: none; margin: 8px 0; font-weight: 600; 
-            transition: 0.3s; padding: 12px 15px; border-radius: 16px; 
-        }
-
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-
-        .logout-btn { margin-top: auto; color: var(--danger) !important; background: rgba(255, 71, 87, 0.1) !important;}
-
-        /* --- HAMBURGER MENU --- */
-        .hamburger-menu {
-            position: fixed; top: 32px; left: 25px; z-index: 1100;
-            background: var(--primary); color: white; border: none;
-            width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-            transition: 0.3s;
-        }
-        .hamburger-menu:hover { transform: scale(1.05); background: var(--primary-dark); }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { 
-            margin-left: 300px; padding: 40px 60px; width: 100%;
-            transition: all 0.4s ease; min-height: 100vh;
-        }
-
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
-        .header h1 { font-family: 'Outfit', sans-serif; margin: 0; font-size: 32px; font-weight: 800; }
-        .header p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 15px; }
-        .admin-badge {
-            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
-            color: white;
-            padding: 10px 22px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 13px;
-            box-shadow: 0 6px 20px rgba(59, 113, 202, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: none;
-            letter-spacing: 1px;
-        }
-
-        /* --- STATS GRID --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: var(--glass-bg); backdrop-filter: blur(12px); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); border-bottom: 5px solid var(--primary); display: flex; align-items: center; gap: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .stat-icon { font-size: 45px; color: var(--primary); opacity: 0.9; }
-        .stat-info h3 { font-family: 'Outfit', sans-serif; margin: 0; font-size: 36px; font-weight: 800; line-height: 1; }
-        .stat-info p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* --- FORMS --- */
-        .forms-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 50px; }
-        .form-box { background: var(--glass-bg); padding: 30px; border-radius: 24px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .form-box.lagu { border-top: 5px solid var(--emerald); }
-        .form-box.album { border-top: 5px solid var(--primary); }
-        .form-box h2 { font-family: 'Outfit', sans-serif; font-size: 20px; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
-        
-        .input-group { margin-bottom: 18px; position: relative; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: var(--text-main); }
-        .input-group input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid #e1e5ee; background: #fff; font-size: 14px; outline: none; transition: 0.3s; font-family: inherit; }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); }
-        
-        .btn-submit { background: var(--emerald); color: white; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 15px; width: 100%; margin-top: 10px;}
-        .btn-submit:hover { background: #059669; transform: translateY(-2px); }
-        .btn-submit.album-btn { background: var(--primary); }
-        .btn-submit.album-btn:hover { background: var(--primary-dark); }
-
-        /* Custom Dropdown */
-        .album-option { padding: 12px 18px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; transition: 0.2s; }
-        .album-option:hover { background: var(--primary); color: white; }
-
-        /* --- TABEL ADMIN --- */
-        .search-box-admin { width: 100%; padding: 16px 25px; border-radius: 16px; border: 2px solid var(--glass-border); background: var(--glass-bg); font-size: 15px; outline: none; transition: 0.3s; margin-bottom: 25px; font-family: inherit; box-shadow: 0 5px 15px rgba(0,0,0,0.02);}
-        .search-box-admin:focus { background: #fff; border-color: var(--primary); }
-
-        .table-container { background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 40px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { 
-    text-align: left; 
-    padding: 18px 25px; 
-    color: var(--text-muted); 
-    font-size: 13px; 
-    text-transform: uppercase; 
-    font-weight: 700; 
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-dark: #a29bfe;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --emerald: #00cec9;
+        --danger: #ff6b81;
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+    }
     
-    /* INI OBATNYA: Background dibikin putih pekat (95%) dan dikasih efek blur biar konten di bawahnya gak tembus/berbayang */
-    background: rgba(255, 255, 255, 0.95); 
-    backdrop-filter: blur(10px); 
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body { 
+        margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); display: flex; overflow-x: hidden; 
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar { 
+        width: 300px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
+        padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+        transition: transform 0.4s ease; 
+    }
+
+    .sidebar.hidden { transform: translateX(-100%); }
     
-    border-bottom: 1px solid var(--glass-border); 
-    letter-spacing: 1px;
-}
-        td { padding: 18px 25px; border-bottom: 1px solid var(--glass-border); font-size: 14px; vertical-align: middle; }
-        tr:hover td { background-color: rgba(255,255,255,0.6); }
-        
-        .btn-delete { background: rgba(229,62,62,0.1); color: var(--danger); border: 1px solid #fecaca; padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-family: inherit;}
-        .btn-delete:hover { background: var(--danger); color: white; }
-        .btn-edit { background: rgba(59,113,202,0.1); color: var(--primary); border: 1px solid rgba(59,113,202,0.3); padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; margin-right: 8px; font-family: inherit;}
-        .btn-edit:hover { background: var(--primary); color: white; }
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
+        text-align: center; line-height: 45px; 
+    }
 
-        /* --- MODAL EDIT --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-box { background: #fff; padding: 40px; border-radius: 24px; width: 450px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative; }
-        .modal-box h2 { margin-top: 0; color: var(--primary); font-size: 22px; font-family: 'Outfit', sans-serif; margin-bottom: 25px;}
-        .btn-close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; transition: 0.3s;}
-        .btn-close-modal:hover { color: var(--danger); transform: rotate(90deg);}
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .logout-btn { margin-top: auto; color: var(--danger) !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- ALERTS --- */
-        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px;}
-        .error-msg { background: #ffe8e8; color: var(--danger); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px;}
+    /* --- HAMBURGER MENU --- */
+    .hamburger-menu {
+        position: fixed; top: 32px; left: 25px; z-index: 1100;
+        background: var(--primary-grad); color: white; border: none;
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        @media (max-width: 768px) {
-            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100%; }
-            *, *::before, *::after { box-sizing: border-box !important; }
-            
-            /* --- OBAT HAMBURGER VS VELOHERTZ --- */
-            .sidebar { 
-                width: 300px; 
-                box-shadow: 5px 0 15px rgba(0,0,0,0.3); 
-                padding-top: 90px !important; /* Dorong sidebar ke bawah */
-            }
-            
-            .sidebar h2 {
-                margin-top: 15px !important; /* Paksa Velohertz turun menjauh dari tombol */
-            }
-            /* ----------------------------------- */
-            
-            .main-content, .main-content.full-width { 
-                margin-left: 0 !important; 
-                padding: 80px 15px 120px 15px !important; 
-                width: 100% !important; 
-            }
-            
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            
-            /* Header turun di HP */
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+    /* --- MAIN CONTENT --- */
+    .main-content { margin-left: 300px; padding: 40px 60px; width: 100%; transition: all 0.4s ease; min-height: 100vh; }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+    .header h1 { font-family: 'Outfit', sans-serif; margin: 0; font-size: 32px; font-weight: 800; }
+    .header p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 15px; }
+    .admin-badge {
+        background: var(--primary-grad); color: white; padding: 10px 22px; border-radius: 30px;
+        font-weight: 800; font-size: 13px; box-shadow: 0 6px 20px rgba(162, 155, 254, 0.3);
+        display: flex; align-items: center; gap: 10px; border: none; letter-spacing: 1px;
+    }
 
-            /* Grid turun ke bawah */
-            .stats-grid { grid-template-columns: 1fr; }
-            .forms-container { grid-template-columns: 1fr; }
+    /* --- STATS GRID --- */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+    
+    .stat-card { 
+        background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+        padding: 25px; border-radius: 20px; 
+        border: 1px solid var(--glass-border); /* Garis bawah tebal dihapus */
+        display: flex; align-items: center; gap: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+        transition: all 0.3s ease; /* Tambahan transisi biar mulus */
+    }
+    
+    /* Efek Hover untuk Kotak Statistik */
+    .stat-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 25px 50px rgba(116, 185, 255, 0.15);
+    }
+    
+    .stat-icon { font-size: 45px; color: var(--primary); opacity: 0.9; }
+    .stat-info h3 { font-family: 'Outfit', sans-serif; margin: 0; font-size: 36px; font-weight: 800; line-height: 1; }
+    .stat-info p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-            /* Bikin tabel bisa digeser ke samping */
-            table { 
-                display: block; 
-                width: 100%; 
-                overflow-x: auto; 
-                white-space: nowrap; 
-                -webkit-overflow-scrolling: touch; 
-            }
-        }
-    </style>
+    /* --- FORMS --- */
+    .forms-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 50px; }
+    
+    .form-box { 
+        background: var(--glass-bg); padding: 30px; border-radius: 24px; 
+        border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+        backdrop-filter: blur(12px); 
+        transition: all 0.3s ease; 
+    }
+    
+    /* Efek Hover untuk Kotak Form */
+    .form-box:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    
+    .form-box h2 { font-family: 'Outfit', sans-serif; font-size: 20px; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: var(--text-main);}
+    
+    .input-group { margin-bottom: 18px; position: relative; }
+    .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: var(--text-muted); }
+    .input-group input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 14px; outline: none; transition: 0.3s; font-family: inherit; }
+    .input-group input::placeholder { color: rgba(255, 255, 255, 0.3); }
+    .input-group input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+    
+    .btn-submit { background: var(--emerald); color: #000; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 15px; width: 100%; margin-top: 10px;}
+    .btn-submit:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 206, 201, 0.3); }
+    .btn-submit.album-btn { background: var(--primary-grad); color: white; }
+    .btn-submit.album-btn:hover { box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
+
+    /* Custom Dropdown */
+    #album_dropdown { background: rgba(11, 15, 25, 0.95) !important; border-color: rgba(255,255,255,0.2) !important; color: #fff; }
+    .album-option { padding: 12px 18px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; transition: 0.2s; }
+    .album-option:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
+
+    /* --- TABEL ADMIN --- */
+    .search-box-admin { width: 100%; padding: 16px 25px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 15px; outline: none; transition: 0.3s; margin-bottom: 25px; font-family: inherit; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+    .search-box-admin::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .search-box-admin:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+
+    .table-container { background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); margin-bottom: 40px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { 
+        text-align: left; padding: 18px 25px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; font-weight: 700; 
+        background: rgba(20, 25, 35, 0.95); backdrop-filter: blur(10px); 
+        border-bottom: 1px solid var(--glass-border); letter-spacing: 1px;
+    }
+    td { padding: 18px 25px; border-bottom: 1px solid var(--glass-border); font-size: 14px; vertical-align: middle; color: var(--text-main); }
+    tr:hover td { background-color: rgba(255,255,255,0.05); }
+    
+    .btn-delete { background: rgba(255, 71, 87, 0.1); color: var(--danger); border: 1px solid rgba(255, 71, 87, 0.3); padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-family: inherit; backdrop-filter: blur(5px);}
+    .btn-delete:hover { background: rgba(255, 71, 87, 0.2); color: #fff; border-color: transparent;}
+    .btn-edit { background: rgba(116, 185, 255, 0.1); color: var(--primary); border: 1px solid rgba(116, 185, 255, 0.3); padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; margin-right: 8px; font-family: inherit; backdrop-filter: blur(5px);}
+    .btn-edit:hover { background: rgba(116, 185, 255, 0.2); color: #fff; border-color: transparent;}
+
+    /* --- MODAL EDIT --- */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-box { background: #0b0f19; border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; width: 450px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; }
+    .modal-box h2 { margin-top: 0; color: var(--primary); font-size: 22px; font-family: 'Outfit', sans-serif; margin-bottom: 25px;}
+    .btn-close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; transition: 0.3s;}
+    .btn-close-modal:hover { color: var(--danger); transform: rotate(90deg);}
+
+    /* --- ALERTS --- */
+    .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);}
+    .error-msg { background: rgba(255, 71, 87, 0.1); color: var(--danger); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);}
+
+    @media (max-width: 768px) {
+        html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100%; }
+        *, *::before, *::after { box-sizing: border-box !important; }
+        .sidebar { width: 300px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); padding-top: 90px !important; }
+        .sidebar h2 { margin-top: 15px !important; }
+        .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 15px 120px 15px !important; width: 100% !important; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
+        .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .stats-grid { grid-template-columns: 1fr; }
+        .forms-container { grid-template-columns: 1fr; }
+        table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    }
+</style>
 </head>
 <body>
 

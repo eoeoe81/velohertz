@@ -47,107 +47,130 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #3b71ca;
-            --primary-dark: #2a5298;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-            --emerald: #10b981;
-        }
-        
-        body { 
-            margin: 0; 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--app-bg); 
-            background-attachment: fixed; 
-            color: var(--text-main); 
-            display: flex; 
-            overflow-x: hidden; 
-        }
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --emerald: #00cec9;
+    }
+    
+    body { 
+        margin: 0; 
+        font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); 
+        display: flex; 
+        overflow-x: hidden; 
+    }
 
-        /* --- SIDEBAR (SINKRON 260PX) --- */
-        .sidebar { 
-            width: 260px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); 
-            padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .sidebar.hidden { transform: translateX(-100%); }
-        .sidebar h2 { font-family: 'Outfit', sans-serif; color: var(--primary); margin: 0 0 40px 0; font-size: 28px; font-weight: 800; text-align: center; line-height: 45px; }
-        .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+    /* --- SIDEBAR (SINKRON 260PX) --- */
+    .sidebar { 
+        width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
+        padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; font-size: 28px; font-weight: 800; text-align: center; line-height: 45px; 
+    }
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- HAMBURGER (SINKRON POSISI) --- */
-        .hamburger-menu {
-            position: fixed; top: 32px; left: 25px; z-index: 1100;
-            background: var(--primary); color: white; border: none;
-            width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-        }
+    /* --- HAMBURGER (SINKRON POSISI) --- */
+    .hamburger-menu {
+        position: fixed; top: 32px; left: 25px; z-index: 1100;
+        background: var(--primary-grad); color: white; border: none;
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- MAIN CONTENT (ANTI LENGKET) --- */
-        .main-content { 
-            margin-left: 260px; padding: 40px 60px; width: 100%;
-            transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    /* --- MAIN CONTENT (ANTI LENGKET) --- */
+    .main-content { 
+        margin-left: 260px; padding: 40px 60px; width: 100%;
+        transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
 
-        /* --- PROFILE CARD --- */
-        .profile-card { 
-            background: var(--glass-bg); backdrop-filter: blur(15px); 
-            border-radius: 30px; border: 1px solid var(--glass-border); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05); padding: 50px; 
-            text-align: center; width: 100%; max-width: 500px; 
-        }
-        .profile-pic { 
-            width: 160px; height: 160px; border-radius: 50%; object-fit: cover; 
-            border: 6px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            margin-bottom: 25px; background: #fff;
-        }
-        .profile-card h1 { font-family: 'Outfit', sans-serif; margin: 0 0 5px 0; font-size: 32px; color: var(--text-main); font-weight: 800; }
-        .profile-card p.subtitle { margin: 0 0 30px 0; color: var(--text-muted); font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    /* --- PROFILE CARD (DARK MODE) --- */
+    .profile-card { 
+        background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-radius: 30px; border: 1px solid var(--glass-border); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4); padding: 50px; 
+        text-align: center; width: 100%; max-width: 500px; 
+    }
+    .profile-pic { 
+        width: 160px; height: 160px; border-radius: 50%; object-fit: cover; 
+        border: 6px solid #1a1e29; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        margin-bottom: 25px; background: #0b0f19;
+    }
+    .profile-card h1 { font-family: 'Outfit', sans-serif; margin: 0 0 5px 0; font-size: 32px; color: var(--text-main); font-weight: 800; }
+    .profile-card p.subtitle { margin: 0 0 30px 0; color: var(--primary); font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8;}
 
-        .btn-upload { 
-            background: var(--primary); color: white; border: none; padding: 14px 30px; 
-            border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; 
-            font-family: inherit; font-size: 14px; width: 100%; margin-bottom: 12px;
-        }
-        .btn-upload:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        
-        .btn-delete { 
-            background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.2); 
-            padding: 14px 30px; border-radius: 16px; font-weight: 600; cursor: pointer; 
-            transition: 0.3s; font-family: inherit; font-size: 14px; width: 100%;
-        }
-        .btn-delete:hover { background: #ff4757; color: white; }
+    /* Style form pisahannya biar gelap nyatu */
+    form[action=""] { border-bottom-color: rgba(255,255,255,0.05) !important; }
 
-        .custom-file-input { margin-bottom: 20px; width: 100%; }
-        input[type="file"] { 
-            background: rgba(255,255,255,0.5); padding: 12px; border-radius: 12px; 
-            border: 1px solid var(--glass-border); width: 100%; font-size: 13px; color: var(--text-muted);
-        }
+    .btn-upload { 
+        background: var(--primary-grad); color: white; border: none; padding: 14px 30px; 
+        border-radius: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; 
+        font-family: inherit; font-size: 14px; width: 100%; margin-bottom: 12px;
+    }
+    .btn-upload:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
+    
+    .btn-delete { 
+        background: rgba(255, 71, 87, 0.1); color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.2); 
+        padding: 14px 30px; border-radius: 16px; font-weight: 600; cursor: pointer; 
+        transition: 0.3s; font-family: inherit; font-size: 14px; width: 100%;
+        backdrop-filter: blur(5px);
+    }
+    .btn-delete:hover { background: rgba(255, 71, 87, 0.2); color: #fff; border-color: transparent; }
 
-        /* --- ALERTS --- */
-        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; font-size: 14px; font-weight: 500; }
-        .error-msg { background: #ffe8e8; color: #ff4757; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; font-size: 14px; font-weight: 500; }
+    .custom-file-input { margin-bottom: 20px; width: 100%; }
+    input[type="file"] { 
+        background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px; 
+        border: 1px solid var(--glass-border); width: 100%; font-size: 13px; color: var(--text-main);
+    }
+    /* Biar tombol 'Choose File' bawaan browser ikut styling dark mode */
+    input[type="file"]::-webkit-file-upload-button {
+        background: rgba(255, 255, 255, 0.1); color: var(--text-main);
+        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 12px;
+        margin-right: 10px; cursor: pointer; transition: 0.2s; font-family: 'Poppins', sans-serif; font-size: 12px;
+    }
+    input[type="file"]::-webkit-file-upload-button:hover { background: rgba(255, 255, 255, 0.2); }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-            .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            .profile-card { padding: 30px; }
-        }
-    </style>
+    /* --- ALERTS --- */
+    .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; backdrop-filter: blur(5px); }
+    .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; backdrop-filter: blur(5px); }
+
+    @media (max-width: 768px) {
+        .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
+        .profile-card { padding: 30px; }
+    }
+</style>
 </head>
 <body>
 

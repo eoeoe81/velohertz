@@ -48,83 +48,118 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($playlist['ptitle']); ?> - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #3b71ca;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-            --emerald: #10b981;
-        }
-        
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--app-bg); background-attachment: fixed; color: var(--text-main); display: flex; overflow-x: hidden; }
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --emerald: #00cec9;
+    }
+    
+    body { 
+        margin: 0; font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); display: flex; overflow-x: hidden; 
+    }
 
-        /* --- SIDEBAR (SINKRON TOTAL 260PX) --- */
-        .sidebar { 
-            width: 260px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); 
-            padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .sidebar.hidden { transform: translateX(-100%); }
-        .sidebar h2 { 
-            font-family: 'Outfit', sans-serif; color: var(--primary); 
-            margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
-            text-align: center; line-height: 45px; /* SINKRON DENGAN TINGGI HAMBURGER */
-        }
-        .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); }
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+    /* --- SIDEBAR (SINKRON TOTAL 260PX) --- */
+    .sidebar { 
+        width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
+        padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
+        text-align: center; line-height: 45px; 
+    }
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- HAMBURGER (SINKRON POSISI & SIZE) --- */
-        .hamburger-menu { 
-            position: fixed; top: 32px; left: 25px; z-index: 1100; 
-            background: var(--primary); color: white; border: none; 
-            width: 45px; height: 45px; border-radius: 12px; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 20px; box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-        }
+    /* --- HAMBURGER (SINKRON POSISI & SIZE) --- */
+    .hamburger-menu { 
+        position: fixed; top: 32px; left: 25px; z-index: 1100; 
+        background: var(--primary-grad); color: white; border: none; 
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 20px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- CONTENT --- */
-        .main-content { 
-            margin-left: 280px; padding: 40px 60px; width: 100%; 
-            transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; 
-        }
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        .content-container { max-width: 1100px; margin: 0 auto; }
+    /* --- CONTENT --- */
+    .main-content { 
+        margin-left: 280px; padding: 40px 60px; width: 100%; 
+        transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; 
+    }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    .content-container { max-width: 1100px; margin: 0 auto; }
 
-        .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 30px; color: var(--emerald); text-decoration: underline; font-weight: 600; font-size: 14px;}
+    .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 30px; color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; opacity: 0.8;}
+    .back-link:hover { opacity: 1; transform: translateX(-5px); }
 
-        .hero-section { display: flex; align-items: center; gap: 35px; margin-bottom: 40px; padding: 35px; background: rgba(255,255,255,0.3); border-radius: 30px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .hero-img { width: 180px; height: 180px; border-radius: 20px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .hero-text h1 { font-family: 'Outfit', sans-serif; font-size: 46px; margin: 5px 0; line-height: 1.1; letter-spacing: -2px; }
-        
-        .btn-edit-pl { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px; }
+    /* Hero Section Dark Mode */
+    .hero-section { 
+        display: flex; align-items: center; gap: 35px; margin-bottom: 40px; padding: 35px; 
+        background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: 30px; 
+        border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+    }
+    .hero-img { width: 180px; height: 180px; border-radius: 20px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.5); flex-shrink: 0; }
+    .hero-text h1 { font-family: 'Outfit', sans-serif; font-size: 46px; margin: 5px 0; line-height: 1.1; letter-spacing: -2px; color: var(--text-main); }
+    
+    .btn-edit-pl { background: rgba(255, 255, 255, 0.1); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.2); padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px; transition: 0.3s; }
+    .btn-edit-pl:hover { background: rgba(255, 255, 255, 0.2); }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 80px; }
-        td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
-        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; width: 45px; font-weight: bold; }
-        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; text-align: right; }
-        tr:hover td { background: #fff; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 80px; }
+    td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); vertical-align: middle; color: var(--text-main); }
+    td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; width: 45px; font-weight: bold; color: var(--text-muted); }
+    td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; text-align: right; }
+    tr:hover td { background: rgba(255, 255, 255, 0.1); }
 
-        .btn-play-small { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-play-small i { margin-left: 2px; }
+    .btn-play-small { background: var(--primary-grad); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: 0.3s; }
+    .btn-play-small:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
+    .btn-play-small i { margin-left: 2px; }
 
-        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; display: flex; align-items: center; gap: 10px; }
-        .error-msg { background: #ffe8e8; color: #ff4757; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; display: flex; align-items: center; gap: 10px; }
+    /* Alert Dark Mode */
+    .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
+    .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); }
-            .main-content { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100%; }
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            .hero-section { flex-direction: column; align-items: center; text-align: center; }
-        }
-    </style>
+    /* Khusus untuk form edit di dalam hero-section */
+    #edit_form textarea {
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--text-main);
+        border: 1px solid var(--glass-border);
+    }
+    #edit_form textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .main-content { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100%; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
+        .hero-section { flex-direction: column; align-items: center; text-align: center; }
+    }
+</style>
 </head>
 <body>
     <button class="hamburger-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -176,10 +211,10 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
                             <td>
                                 <div style="display:inline-flex; align-items:center; gap:15px;">
                                     <button class="btn-play-small"><i class="fa-solid fa-play"></i></button>
-                                    <form method="POST" style="display:inline;">
-                                        <input type="hidden" name="tid_hapus" value="<?php echo $tr['tid']; ?>">
-                                        <button type="submit" name="hapus_lagu" style="color:#ff4757; border:none; background:none; cursor:pointer; font-size:18px;"><i class="fa-solid fa-circle-xmark"></i></button>
-                                    </form>
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Hapus lagu ini dari playlist? 🥺');">
+    <input type="hidden" name="tid_hapus" value="<?php echo $tr['tid']; ?>">
+    <button type="submit" name="hapus_lagu" style="color:#ff6b81; border:none; background:none; cursor:pointer; font-size:18px; transition:0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fa-solid fa-circle-xmark"></i></button>
+</form>
                                 </div>
                             </td>
                         </tr>

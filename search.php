@@ -33,185 +33,215 @@ if (isset($_POST['tambah_lagu'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cari Lagu - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #3b71ca;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-            --emerald: #10b981;
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --emerald: #00cec9; /* Modern Cyan/Teal (Senada sama password meter) */
+    }
+    
+    body { 
+        margin: 0; 
+        font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); 
+        display: flex; 
+        overflow-x: hidden; 
+    }
+
+    /* --- SIDEBAR (Sama dengan Index) --- */
+    .sidebar { 
+        width: 260px; 
+        background: rgba(20, 25, 35, 0.4); 
+        backdrop-filter: blur(20px); 
+        padding: 32px 20px; 
+        height: 100vh; 
+        position: fixed; 
+        left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); 
+        display: flex; 
+        flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; 
+        font-size: 28px; 
+        font-weight: 800; 
+        text-align: center; 
+        line-height: 45px; 
+    }
+    
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
+
+    /* --- HAMBURGER --- */
+    .hamburger-menu {
+        position: fixed; top: 32px; left: 25px; z-index: 1100;
+        background: var(--primary-grad); color: white; border: none;
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+    /* --- MAIN CONTENT --- */
+    .main-content { 
+        margin-left: 260px; padding: 40px; width: 100%;
+        transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
+    }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    .content-container { max-width: 1100px; margin: 0 auto; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
+    .header h2 { font-family: 'Outfit', sans-serif; font-size: 30px; }
+
+    /* --- SEARCH FORM --- */
+    .form-box { 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(12px); 
+        padding: 30px; 
+        border-radius: 24px; 
+        border: 1px solid var(--glass-border); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+        margin-bottom: 40px; 
+    }
+    .form-box h3 { font-family: 'Outfit', sans-serif; margin-top: 0; color: var(--text-main); margin-bottom: 20px; font-size: 20px; }
+    
+    .search-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
+    
+    /* Dark Minimalist Search Box */
+    .search-box { 
+        flex-grow: 1; 
+        min-width: 250px; 
+        padding: 15px 25px; 
+        border-radius: 16px; 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        background: rgba(255, 255, 255, 0.03); 
+        color: #fff;
+        font-size: 15px; 
+        outline: none; 
+        transition: 0.3s; 
+    }
+    .search-box::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .search-box:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+    
+    .btn-search { 
+        background: var(--primary-grad); 
+        color: white; 
+        border: none; 
+        padding: 15px 30px; 
+        border-radius: 16px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        transition: 0.3s; 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        letter-spacing: 0.5px;
+    }
+    .btn-search:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
+
+    /* --- RESULTS TABLE --- */
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 50px;}
+    th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; }
+    td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 14px;}
+    td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
+    td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
+    tr:hover td { background: rgba(255, 255, 255, 0.1); }
+
+    /* --- PLAY & ADD BUTTONS --- */
+    .play-icon-btn { 
+        background: var(--primary-grad); 
+        color: white; 
+        border: none; 
+        width: 38px; 
+        height: 38px; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        transition: 0.3s; 
+    }
+    .play-icon-btn:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
+
+    .btn-add { 
+        background: var(--emerald); 
+        color: #000; 
+        border: none; 
+        padding: 10px 15px; 
+        border-radius: 12px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        transition: 0.2s; 
+        margin-left: 8px; 
+        font-size: 13px;
+    }
+    .btn-add:hover { filter: brightness(1.1); transform: scale(1.05); }
+
+    /* Dropdown Playlist di Dark Mode */
+    select[name='pid'] { 
+        padding: 10px; 
+        border-radius: 12px; 
+        border: 1px solid rgba(255, 255, 255, 0.2); 
+        background: rgba(255, 255, 255, 0.05); 
+        outline: none; 
+        font-size: 13px; 
+        color: #fff; 
+    }
+    /* Mengubah warna latar belakang opsi dropdown agar teks putih bisa dibaca */
+    select[name='pid'] option {
+        background: #0b0f19;
+        color: #fff;
+    }
+
+    /* --- ALERTS --- */
+    .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
+    .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
+
+    /* --- OBAT ANTI GESER KIRI-KANAN DI HP / IPHONE --- */
+    @media (max-width: 768px) {
+        html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100%; }
+        *, *::before, *::after { box-sizing: border-box !important; }
+        
+        .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        
+        .main-content, .main-content.full-width { 
+            margin-left: 0 !important; 
+            padding: 80px 15px 120px 15px !important; 
+            width: 100% !important; 
         }
         
-        body { 
-            margin: 0; 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--app-bg); 
-            background-attachment: fixed; 
-            color: var(--text-main); 
-            display: flex; 
-            overflow-x: hidden; 
-        }
-
-        /* --- SIDEBAR (Sama dengan Index) --- */
-        .sidebar { 
-            width: 260px; 
-            background: rgba(255, 255, 255, 0.4); 
-            backdrop-filter: blur(20px); 
-            padding: 32px 20px; 
-            height: 100vh; 
-            position: fixed; 
-            left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); 
-            display: flex; 
-            flex-direction: column; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .sidebar.hidden { transform: translateX(-100%); }
-        .sidebar h2 { font-family: 'Outfit', sans-serif; color: var(--primary); margin: 0 0 40px 0; font-size: 28px; font-weight: 800; text-align: center; line-height: 45px; }
-        .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
-
-        /* --- HAMBURGER --- */
-        .hamburger-menu {
-            position: fixed; top: 32px; left: 25px; z-index: 1100;
-            background: var(--primary); color: white; border: none;
-            width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-        }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { 
-            margin-left: 300px; padding: 40px; width: 100%;
-            transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
-        }
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        .content-container { max-width: 1100px; margin: 0 auto; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
-        .header h2 { font-family: 'Outfit', sans-serif; font-size: 30px; }
-
-        /* --- SEARCH FORM --- */
-        .form-box { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(12px); 
-            padding: 30px; 
-            border-radius: 24px; 
-            border: 1px solid var(--glass-border); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.05); 
-            margin-bottom: 40px; 
+        table { 
+            display: block; 
+            width: 100%; 
+            overflow-x: auto; 
+            white-space: nowrap; 
+            -webkit-overflow-scrolling: touch; 
         }
-        .form-box h3 { font-family: 'Outfit', sans-serif; margin-top: 0; color: var(--text-main); margin-bottom: 20px; font-size: 20px; }
-        
-        .search-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-box { 
-            flex-grow: 1; 
-            min-width: 250px; 
-            padding: 15px 25px; 
-            border-radius: 16px; 
-            border: 2px solid #e1e5ee; 
-            background: #fff; 
-            font-size: 15px; 
-            outline: none; 
-            transition: 0.3s; 
-        }
-        .search-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); }
-        
-        .btn-search { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            border-radius: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        .btn-search:hover { background: #2a5298; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59, 113, 202, 0.3); }
-
-        /* --- RESULTS TABLE --- */
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 50px;}
-        th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; }
-        td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 14px;}
-        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
-        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
-        tr:hover td { background: #fff; }
-
-        /* --- PLAY & ADD BUTTONS --- */
-        .play-icon-btn { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            width: 38px; 
-            height: 38px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            transition: 0.3s; 
-        }
-        .play-icon-btn:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(59, 113, 202, 0.3); }
-
-        .btn-add { 
-            background: var(--emerald); 
-            color: white; 
-            border: none; 
-            padding: 10px 15px; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            margin-left: 8px; 
-            font-size: 13px;
-        }
-        .btn-add:hover { background: #059669; }
-
-        select[name='pid'] { 
-            padding: 10px; 
-            border-radius: 12px; 
-            border: 1px solid #e1e5ee; 
-            background: #fff; 
-            outline: none; 
-            font-size: 13px; 
-            color: var(--text-main); 
-        }
-
-        /* --- ALERTS --- */
-        .error-msg { background: #ffe8e8; color: #ff4757; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; display: flex; align-items: center; gap: 10px; font-weight: 500; }
-        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; display: flex; align-items: center; gap: 10px; font-weight: 500; }
-
-        /* --- OBAT ANTI GESER KIRI-KANAN DI HP / IPHONE --- */
-        @media (max-width: 768px) {
-            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100%; }
-            *, *::before, *::after { box-sizing: border-box !important; }
-            
-            .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-            
-            .main-content, .main-content.full-width { 
-                margin-left: 0 !important; 
-                padding: 80px 15px 120px 15px !important; 
-                width: 100% !important; 
-            }
-            
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            
-            /* Bikin tabel hasil pencarian bisa digeser ke samping */
-            table { 
-                display: block; 
-                width: 100%; 
-                overflow-x: auto; 
-                white-space: nowrap; 
-                -webkit-overflow-scrolling: touch; 
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
@@ -234,7 +264,7 @@ if (isset($_POST['tambah_lagu'])) {
     <div class="main-content" id="mainContent">
         <div class="content-container">
             <div class="header">
-                <h2>Cari Musik 🔍</h2>
+                <h2>Cari Musik</h2>
                 <a href="profile.php" style="display:flex; align-items:center; background:var(--glass-bg); padding:10px 20px; border-radius:20px; text-decoration:none; color:var(--text-main); font-weight:700; border:1px solid var(--glass-border);">
                     <i class="fa-solid fa-circle-user" style="margin-right: 10px; font-size: 20px; color: var(--primary);"></i> 
                     <?php echo htmlspecialchars($username); ?>

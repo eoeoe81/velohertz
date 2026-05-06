@@ -48,86 +48,115 @@ $result_tracks = $conn->query($sql_tracks);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($album['atitle']); ?> - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #3b71ca;
-            --primary-dark: #2a5298;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-            --emerald: #10b981;
-        }
-        
-        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--app-bg); background-attachment: fixed; color: var(--text-main); display: flex; overflow-x: hidden; }
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --emerald: #00cec9;
+    }
+    
+    body { 
+        margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; color: var(--text-main); display: flex; overflow-x: hidden; 
+    }
 
-        /* --- SIDEBAR (SINKRON 260PX) --- */
-        .sidebar { width: 260px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar.hidden { transform: translateX(-100%); }
-        .sidebar h2 { font-family: 'Outfit', sans-serif; color: var(--primary); margin: 0 0 40px 0; font-size: 28px; font-weight: 800; text-align: center; line-height: 45px; }
-        .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+    /* --- SIDEBAR (SINKRON 260PX) --- */
+    .sidebar { 
+        width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
+        padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; font-size: 28px; font-weight: 800; text-align: center; line-height: 45px; 
+    }
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- HAMBURGER --- */
-        .hamburger-menu { position: fixed; top: 32px; left: 25px; z-index: 1100; background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    /* --- HAMBURGER --- */
+    .hamburger-menu { 
+        position: fixed; top: 32px; left: 25px; z-index: 1100; 
+        background: var(--primary-grad); color: white; border: none; 
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer; 
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3); display: flex; 
+        align-items: center; justify-content: center; font-size: 20px; transition: 0.3s; 
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- MAIN CONTENT --- */
-        .main-content { margin-left: 280px; padding: 40px 60px; width: 100%; transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; }
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        .content-container { max-width: 1100px; margin: 0 auto; }
-        
-        .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 25px; color: var(--emerald); text-decoration: underline; font-weight: 600; font-size: 14px; }
+    /* --- MAIN CONTENT --- */
+    .main-content { margin-left: 280px; padding: 40px 60px; width: 100%; transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    .content-container { max-width: 1100px; margin: 0 auto; }
+    
+    .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 25px; color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; opacity: 0.8; }
+    .back-link:hover { opacity: 1; transform: translateX(-5px); }
 
-        /* --- HERO ALBUM HEADER (FIXED ALIGNMENT) --- */
-        .album-hero {
-            display: flex; 
-            align-items: center; /* BIAR SEJAJAR TENGAH */
-            gap: 30px; 
-            margin-bottom: 45px;
-            padding: 30px; 
-            background: rgba(255, 255, 255, 0.3); 
-            border-radius: 30px;
-            border: 1px solid var(--glass-border); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .album-hero-img { 
-            width: 180px; /* DIKECILIN BIAR PAS */
-            height: 180px; 
-            border-radius: 20px; 
-            object-fit: cover; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
-            flex-shrink: 0; 
-        }
-        
-        .album-hero-text { flex-grow: 1; }
-        .album-hero-text span { font-weight: 800; font-size: 11px; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .album-hero-text h1 { font-family: 'Outfit', sans-serif; font-size: 42px; margin: 0; line-height: 1.1; letter-spacing: -1.5px; }
-        .album-hero-text p { color: var(--text-muted); font-size: 15px; margin-top: 8px; }
+    /* --- HERO ALBUM HEADER --- */
+    .album-hero {
+        display: flex; 
+        align-items: center; 
+        gap: 30px; 
+        margin-bottom: 45px;
+        padding: 30px; 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        border: 1px solid var(--glass-border); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .album-hero-img { 
+        width: 180px; 
+        height: 180px; 
+        border-radius: 20px; 
+        object-fit: cover; 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+        flex-shrink: 0; 
+    }
+    
+    .album-hero-text { flex-grow: 1; }
+    .album-hero-text span { font-weight: 800; font-size: 11px; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .album-hero-text h1 { font-family: 'Outfit', sans-serif; font-size: 42px; margin: 0; line-height: 1.1; letter-spacing: -1.5px; color: var(--text-main); }
+    .album-hero-text p { color: var(--text-muted); font-size: 15px; margin-top: 8px; }
 
-        /* --- TABLE STYLE --- */
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 100px; }
-        th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; font-weight: 700; }
-        td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 15px; }
-        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; width: 45px; font-weight: bold; color: var(--text-muted); }
-        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; text-align: right; }
-        tr:hover td { background: #fff; }
+    /* --- TABLE STYLE --- */
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 100px; }
+    th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; font-weight: 700; }
+    td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 15px; color: var(--text-main); }
+    td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; width: 45px; font-weight: bold; color: var(--text-muted); }
+    td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; text-align: right; }
+    tr:hover td { background: rgba(255, 255, 255, 0.1); }
 
-        .btn-play-row { background: var(--primary); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.3s; }
-        .btn-play-row:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(59, 113, 202, 0.3); }
+    .btn-play-row { background: var(--primary-grad); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+    .btn-play-row:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
+    .btn-play-row i { margin-left: 2px; }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-            .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            .album-hero { flex-direction: column; text-align: center; }
-        }
-    </style>
+    @media (max-width: 768px) {
+        .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
+        .album-hero { flex-direction: column; text-align: center; }
+    }
+</style>
 </head>
 <body>
 

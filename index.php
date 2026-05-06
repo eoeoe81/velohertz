@@ -25,191 +25,181 @@ $no = 1;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beranda - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #3b71ca;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-        }
-        
-        body { 
-            margin: 0; 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--app-bg); 
-            background-attachment: fixed; 
-            color: var(--text-main); 
-            display: flex; 
-            overflow-x: hidden; 
-        }
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+    }
+    
+    body { 
+        margin: 0; 
+        font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); 
+        display: flex; 
+        overflow-x: hidden; 
+    }
 
-        /* --- SIDEBAR --- */
-        .sidebar { 
-            width: 260px; 
-            background: rgba(255, 255, 255, 0.4); 
-            backdrop-filter: blur(20px); 
-            padding: 32px 20px; /* Padding atas disamain ama top tombol */
-            height: 100vh; 
-            position: fixed; 
-            left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); 
-            display: flex; 
-            flex-direction: column; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* --- SIDEBAR --- */
+    .sidebar { 
+        width: 260px; 
+        background: rgba(20, 25, 35, 0.4); 
+        backdrop-filter: blur(20px); 
+        padding: 32px 20px; 
+        height: 100vh; 
+        position: fixed; 
+        left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); 
+        display: flex; 
+        flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        .sidebar.hidden { transform: translateX(-100%); }
-        
-        /* Sejajarin Judul dengan Hamburger */
-        .sidebar h2 { 
-            font-family: 'Outfit', sans-serif; 
-            color: var(--primary); 
-            margin: 0 0 40px 0; /* Margin atas 0 karena udah ada padding di sidebar */
-            font-size: 28px; 
-            font-weight: 800; 
-            text-align: center;
-            line-height: 45px; /* Sama dengan tinggi tombol hamburger */
-        }
+    .sidebar.hidden { transform: translateX(-100%); }
+    
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        /* Gradient Title */
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 40px 0; 
+        font-size: 28px; 
+        font-weight: 800; 
+        text-align: center;
+        line-height: 45px; 
+    }
 
-        .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .sidebar a { display: flex; align-items: center; color: var(--text-main); text-decoration: none; margin: 8px 0; font-weight: 600; transition: 0.3s; padding: 12px 15px; border-radius: 16px; }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- HAMBURGER MENU (SEJAJAR JUDUL) --- */
-        .hamburger-menu {
-            position: fixed; 
-            top: 32px; /* Disamain ama padding-top sidebar */
-            left: 25px; 
-            z-index: 1100;
-            background: var(--primary); 
-            color: white; 
-            border: none;
-            width: 45px; 
-            height: 45px; 
-            border-radius: 12px; 
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 20px;
-            transition: 0.3s;
-        }
-        .hamburger-menu:hover { transform: scale(1.05); background: #2a5298; }
+    /* --- HAMBURGER MENU --- */
+    .hamburger-menu {
+        position: fixed; 
+        top: 32px; 
+        left: 25px; 
+        z-index: 1100;
+        background: var(--primary-grad); 
+        color: white; 
+        border: none;
+        width: 45px; 
+        height: 45px; 
+        border-radius: 12px; 
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 20px;
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- MAIN CONTENT --- */
-        .main-content { 
-            margin-left: 300px; 
-            padding: 40px; 
-            width: 100%;
-            transition: all 0.4s ease; 
-            box-sizing: border-box;
-            min-height: 100vh;
-            margin-bottom: 120px;
-        }
+    /* --- MAIN CONTENT --- */
+    .main-content { 
+        margin-left: 300px; 
+        padding: 40px; 
+        width: 100%;
+        transition: all 0.4s ease; 
+        box-sizing: border-box;
+        min-height: 100vh;
+        margin-bottom: 120px;
+    }
 
-        .content-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+    .content-container { max-width: 1100px; margin: 0 auto; }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
+    
+    .banner { 
+        background: var(--primary-grad); 
+        padding: 40px 50px; border-radius: 30px; display: flex; align-items: center; 
+        justify-content: space-between; margin-bottom: 40px; color: white; box-shadow: 0 10px 30px rgba(162, 155, 254, 0.2);
+    }
+    
+    .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-bottom: 50px; }
+    .album-card { background: var(--glass-bg); padding: 15px; border-radius: 20px; border: 1px solid var(--glass-border); text-decoration: none; color: var(--text-main); transition: 0.3s; }
+    .album-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+    .album-cover { width: 100%; height: 160px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
 
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
-        
-        .banner { 
-            background: linear-gradient(135deg, #1e3c72 0%, #3b71ca 50%, #4facfe 100%); 
-            padding: 40px 50px; border-radius: 30px; display: flex; align-items: center; 
-            justify-content: space-between; margin-bottom: 40px; color: white; box-shadow: 0 10px 30px rgba(30, 60, 114, 0.2);
-        }
-        
-        .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .album-card { background: var(--glass-bg); padding: 15px; border-radius: 20px; border: 1px solid var(--glass-border); text-decoration: none; color: var(--text-main); transition: 0.3s; }
-        .album-card:hover { transform: translateY(-8px); background: #fff; }
-        .album-cover { width: 100%; height: 160px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 50px;}
+    td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); vertical-align: middle;}
+    td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
+    td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
+    tr:hover td { background: rgba(255, 255, 255, 0.1); }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 50px;}
-        td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); vertical-align: middle;}
-        td:first-child { border-left: 1px solid var(--glass-border); border-radius: 15px 0 0 15px; }
-        td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
-        tr:hover td { background: #fff; }
+    /* --- TOMBOL PLAY --- */
+    .btn-play-table { 
+        background: var(--primary-grad); color: white; border: none; 
+        width: 36px; height: 36px; border-radius: 50%; cursor: pointer; 
+        display: inline-flex; align-items: center; justify-content: center; 
+        transition: 0.3s;
+    }
+    .btn-play-table i { margin-left: 2px; }
+    .btn-play-table:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
 
-        /* --- KELAS BARU UNTUK TOMBOL PLAY (Di Tengah) --- */
-        .btn-play-table { 
-            background: var(--primary); color: white; border: none; 
-            width: 36px; height: 36px; border-radius: 50%; cursor: pointer; 
-            display: inline-flex; align-items: center; justify-content: center; 
-            transition: 0.3s;
-        }
-        .btn-play-table i { margin-left: 2px; }
-        .btn-play-table:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(59, 113, 202, 0.3); }
+    /* --- PLAYER BAR --- */
+    .player-bar { 
+        position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; 
+        background: rgba(11, 15, 25, 0.85); 
+        backdrop-filter: blur(20px); 
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border); display: flex; 
+        justify-content: space-between; align-items: center; padding: 0 40px; z-index: 2000; 
+        box-sizing: border-box;
+    }
 
-        /* --- PLAYER BAR --- */
-        .player-bar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; 
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid var(--glass-border); display: flex; 
-            justify-content: space-between; align-items: center; padding: 0 40px; z-index: 2000; 
-            box-sizing: border-box;
-        }
+    .player-left { width: 30%; display: flex; align-items: center; gap: 15px; overflow: hidden; }
+    .now-playing-img { width: 55px; height: 55px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .now-playing-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .now-playing-info { overflow: hidden; }
+    .now-playing-info strong { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+    .now-playing-info span { font-size: 12px; color: var(--text-muted); }
 
-        .player-left { width: 30%; display: flex; align-items: center; gap: 15px; overflow: hidden; }
-        .now-playing-img { width: 55px; height: 55px; border-radius: 12px; background: #e0f2fe; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-        .now-playing-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .now-playing-info { overflow: hidden; }
-        .now-playing-info strong { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .now-playing-info span { font-size: 12px; color: var(--text-muted); }
+    .player-center { width: 40%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .controls { display: flex; align-items: center; gap: 20px; }
+    .play-pause-btn { background: var(--primary-grad); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.2); }
 
-        .player-center { width: 40%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .controls { display: flex; align-items: center; gap: 20px; }
-        .play-pause-btn { background: var(--primary); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+    .progress-container { width: 100%; display: flex; align-items: center; gap: 10px; }
+    .time-text { font-size: 11px; color: var(--text-muted); min-width: 35px; font-weight: 600; }
 
-        .progress-container { width: 100%; display: flex; align-items: center; gap: 10px; }
-        .time-text { font-size: 11px; color: var(--text-muted); min-width: 35px; font-weight: 600; }
+    input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.2); border-radius: 5px; height: 5px; width: 100%; outline: none; cursor: pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ffffff; cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); } 
 
-        input[type=range] { -webkit-appearance: none; background: #d1d5db; border-radius: 5px; height: 5px; width: 100%; outline: none; cursor: pointer; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+    .player-right { width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+    .vol-slider { width: 90px !important; }
 
-        .player-right { width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
-        .vol-slider { width: 90px !important; }
-
-        /* --- OBAT ANTI KEJEPIT DI HP (OVERLAY SEMUA HALAMAN) --- */
-        @media (max-width: 768px) {
-            .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-            
-            /* Konten utama overlay, tidak kedorong */
-            .main-content, .main-content.full-width { 
-                margin-left: 0 !important; 
-                padding: 80px 20px 120px 20px !important; 
-                width: 100vw !important; 
-                box-sizing: border-box;
-            }
-            
-            .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
-            
-            /* Perbaikan tata letak khusus HP */
-            .hero-section, .album-hero { flex-direction: column; align-items: center; text-align: center; }
-            .banner { flex-direction: column; text-align: center; padding: 30px 20px; }
-            .banner i { display: none; } /* Sembunyikan ikon kaset di HP biar gak sempit */
-            
-            /* Bikin grid album & playlist jadi 2 kolom di HP */
-            .item-grid, .album-grid, .playlist-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
-            .item-cover, .album-cover, .playlist-img, .playlist-cover-img { height: 130px !important; }
-            
-            /* Player bar index.php di HP */
-            .player-bar { padding: 0 15px !important; }
-            .player-right { display: none !important; }
-            .player-left { width: 50% !important; }
-            .player-center { width: 50% !important; }
-        }
-    </style>
+    /* --- RESPONSIVE FIXES --- */
+    @media (max-width: 768px) {
+        .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
+        .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
+        .hero-section, .album-hero { flex-direction: column; align-items: center; text-align: center; }
+        .banner { flex-direction: column; text-align: center; padding: 30px 20px; }
+        .banner i { display: none; } 
+        .item-grid, .album-grid, .playlist-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
+        .item-cover, .album-cover, .playlist-img, .playlist-cover-img { height: 130px !important; }
+        .player-bar { padding: 0 15px !important; }
+        .player-right { display: none !important; }
+        .player-left { width: 50% !important; }
+        .player-center { width: 50% !important; }
+    }
+</style>
 </head>
 <body>
 
@@ -346,7 +336,7 @@ $no = 1;
 
         function updateSliderFill(slider) {
             const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
-            slider.style.background = `linear-gradient(to right, var(--primary) ${percent}%, #d1d5db ${percent}%)`;
+            slider.style.background = `linear-gradient(to right, var(--primary) ${percent}%, rgba(255, 255, 255, 0.2) ${percent}%)`;
         }
 
         function loadSong(song) {

@@ -56,139 +56,150 @@ $result_playlist = $conn->query($sql_tampil);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koleksi Kamu - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary: #3b71ca;
-            --primary-dark: #2a5298;
-            --app-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
-            --emerald: #10b981;
-        }
-        
-        body { 
-            margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
-            background: var(--app-bg); background-attachment: fixed; 
-            color: var(--text-main); display: flex; overflow-x: hidden; 
-        }
+    :root {
+        /* Warna Gen-Z Dark Mode */
+        --primary: #74b9ff;
+        --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        --app-bg-color: #0b0f19;
+        --glass-bg: rgba(20, 25, 35, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --emerald: #00cec9;
+    }
+    
+    body { 
+        margin: 0; padding: 0; font-family: 'Poppins', sans-serif; 
+        background-color: var(--app-bg-color);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        background-attachment: fixed; 
+        color: var(--text-main); display: flex; overflow-x: hidden; 
+    }
 
-        /* --- SIDEBAR (SINKRON DENGAN INDEX) --- */
-        .sidebar { 
-            width: 260px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); 
-            padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
-            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* --- SIDEBAR (SINKRON DENGAN INDEX) --- */
+    .sidebar { 
+        width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
+        padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
+        border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        .sidebar.hidden { transform: translateX(-100%); }
-        
-        .sidebar h2 { 
-            font-family: 'Outfit', sans-serif; color: var(--primary); 
-            margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
-            text-align: center; line-height: 45px; 
-        }
+    .sidebar.hidden { transform: translateX(-100%); }
+    
+    .sidebar h2 { 
+        font-family: 'Outfit', sans-serif; 
+        background: var(--primary-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        margin: 0 0 40px 0; font-size: 28px; font-weight: 800; 
+        text-align: center; line-height: 45px; 
+    }
 
-        .sidebar a { 
-            display: flex; align-items: center; color: var(--text-main); 
-            text-decoration: none; margin: 8px 0; font-weight: 600; 
-            transition: 0.3s; padding: 12px 15px; border-radius: 16px; 
-        }
+    .sidebar a { 
+        display: flex; align-items: center; color: var(--text-main); 
+        text-decoration: none; margin: 8px 0; font-weight: 600; 
+        transition: 0.3s; padding: 12px 15px; border-radius: 16px; 
+    }
 
-        .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
-        .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .sidebar a i { margin-right: 15px; font-size: 18px; opacity: 0.7; }
+    .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        .logout-btn { margin-top: auto; color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important;}
+    .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-        /* --- HAMBURGER MENU (POSISI SAMA DENGAN INDEX) --- */
-        .hamburger-menu {
-            position: fixed; top: 32px; left: 25px; z-index: 1100;
-            background: var(--primary); color: white; border: none;
-            width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-            transition: 0.3s;
-        }
-        .hamburger-menu:hover { transform: scale(1.05); background: var(--primary-dark); }
+    /* --- HAMBURGER MENU (POSISI SAMA DENGAN INDEX) --- */
+    .hamburger-menu {
+        position: fixed; top: 32px; left: 25px; z-index: 1100;
+        background: var(--primary-grad); color: white; border: none;
+        width: 45px; height: 45px; border-radius: 12px; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        transition: 0.3s;
+    }
+    .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- MAIN CONTENT (ANTI LENGKET) --- */
-        .main-content { 
-            margin-left: 280px; padding: 40px 60px; width: 100%;
-            transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
-        }
+    /* --- MAIN CONTENT --- */
+    .main-content { 
+        margin-left: 280px; padding: 40px 60px; width: 100%;
+        transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
+    }
 
-        .main-content.full-width { margin-left: 0; padding-left: 90px; }
-        .content-container { max-width: 1100px; margin: 0 auto; }
-        
-        .header { margin-bottom: 30px; margin-top: 10px; }
-        .header h2 { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; }
+    .main-content.full-width { margin-left: 0; padding-left: 90px; }
+    .content-container { max-width: 1100px; margin: 0 auto; }
+    
+    .header { margin-bottom: 30px; margin-top: 10px; }
+    .header h2 { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; }
 
-        /* --- FORM BUAT PLAYLIST --- */
-        .form-box { 
-            background: var(--glass-bg); padding: 30px; border-radius: 24px; 
-            border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            margin-bottom: 45px; max-width: 600px;
-        }
-        .form-box h3 { font-family: 'Outfit', sans-serif; margin-top: 0; margin-bottom: 20px; font-size: 20px; font-weight: 800; }
-        
-        .input-playlist { 
-            flex: 1; padding: 14px 20px; border-radius: 12px; border: 2px solid #e1e5ee; 
-            background: #fff; font-size: 15px; outline: none; transition: 0.3s; font-family: inherit;
-        }
-        .input-playlist:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); }
-        
-        .btn-create { 
-            background: var(--emerald); color: white; border: none; padding: 14px 30px; 
-            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 15px;
-        }
-        .btn-create:hover { background: #059669; transform: translateY(-2px); }
+    /* --- FORM BUAT PLAYLIST --- */
+    .form-box { 
+        background: var(--glass-bg); padding: 30px; border-radius: 24px; 
+        border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+        margin-bottom: 45px; max-width: 600px; backdrop-filter: blur(12px);
+    }
+    .form-box h3 { font-family: 'Outfit', sans-serif; margin-top: 0; margin-bottom: 20px; font-size: 20px; font-weight: 800; color: var(--text-main); }
+    
+    .input-playlist { 
+        flex: 1; padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); 
+        background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 15px; outline: none; transition: 0.3s; font-family: inherit;
+    }
+    .input-playlist::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .input-playlist:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+    
+    .btn-create { 
+        background: var(--emerald); color: #000; border: none; padding: 14px 30px; 
+        border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 15px;
+    }
+    .btn-create:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 206, 201, 0.3); }
 
-        /* --- GRID PLAYLIST --- */
-        .playlist-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 30px; margin-bottom: 100px;
-        }
-        .playlist-wrapper { position: relative; }
-        
-        .playlist-card { 
-            background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
-            transition: 0.3s; text-decoration: none; color: var(--text-main); display: flex; 
-            flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .playlist-card:hover { transform: translateY(-8px); background: #fff; border-color: var(--primary); }
-        
-        .playlist-img { width: 100%; height: 200px; object-fit: cover; }
-        .playlist-icon-empty { 
-            width: 100%; height: 200px; background: #e0f2fe; color: var(--primary); 
-            display: flex; align-items: center; justify-content: center; font-size: 60px; 
-        }
-        
-        .playlist-info { padding: 20px; }
-        .playlist-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .playlist-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+    /* --- GRID PLAYLIST --- */
+    .playlist-grid { 
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+        gap: 30px; margin-bottom: 100px;
+    }
+    .playlist-wrapper { position: relative; }
+    
+    .playlist-card { 
+        background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
+        transition: 0.3s; text-decoration: none; color: var(--text-main); display: flex; 
+        flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .playlist-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+    
+    .playlist-img { width: 100%; height: 200px; object-fit: cover; }
+    
+    /* Ikon kosong dibikin transparan di dark mode */
+    .playlist-icon-empty { 
+        width: 100%; height: 200px; background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); 
+        display: flex; align-items: center; justify-content: center; font-size: 60px; 
+    }
+    
+    .playlist-info { padding: 20px; }
+    .playlist-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .playlist-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-        /* --- TOMBOL HAPUS --- */
-        .btn-delete-pl { 
-            position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.9); 
-            color: #ff4757; border: none; border-radius: 50%; width: 35px; height: 35px; 
-            cursor: pointer; z-index: 10; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .btn-delete-pl:hover { background: #ff4757; color: white; transform: scale(1.1); }
+    /* --- TOMBOL HAPUS --- */
+    .btn-delete-pl { 
+        position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); 
+        color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 50%; width: 35px; height: 35px; 
+        cursor: pointer; z-index: 10; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+    }
+    .btn-delete-pl:hover { background: #ff6b81; color: white; transform: scale(1.1); border-color: transparent; }
 
-        /* --- ALERTS --- */
-        .success-msg { background: #e8fff3; color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #c2f3d6; display: flex; align-items: center; gap: 10px; font-weight: 500; }
-        .error-msg { background: #ffe8e8; color: #ff4757; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #ffcccc; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    /* --- ALERTS --- */
+    .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
+    .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 220px; }
-            .main-content { margin-left: 0; padding: 20px; padding-top: 80px; }
-            .main-content.full-width { padding-left: 20px; }
-        }
-    </style>
+    @media (max-width: 768px) {
+        .sidebar { width: 220px; }
+        .main-content { margin-left: 0; padding: 20px; padding-top: 80px; }
+        .main-content.full-width { padding-left: 20px; }
+    }
+</style>
 </head>
 <body>
 
@@ -214,7 +225,7 @@ $result_playlist = $conn->query($sql_tampil);
             <?php echo $pesan; ?>
 
             <div class="form-box">
-                <h3>Buat Playlist Baru ✨</h3>
+                <h3>Buat Playlist Baru</h3>
                 <form action="" method="POST" style="display: flex; gap: 12px;">
                     <input type="text" name="nama_playlist" class="input-playlist" placeholder="Nama koleksi kamu..." required>
                     <button type="submit" name="buat_playlist" class="btn-create">Buat Playlist</button>

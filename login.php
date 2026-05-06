@@ -70,155 +70,178 @@ if (isset($_POST['login']) && !$lockout) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        
-        /* Background Langit Cerah */
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-        }
-        
-        .login-container {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 40px;
-            border-radius: 24px; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    
+    /* Dark Mode + Modern Mesh Gradient Background */
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #0b0f19;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+        color: #fff;
+    }
+    
+    /* Glassmorphism Card */
+    .login-container {
+        background: rgba(20, 25, 35, 0.6);
+        padding: 45px 40px;
+        border-radius: 28px; 
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        /* Judul Velohertz: Gradien Biru Kalem ke Biru Muda */
-        .velohertz-title {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 38px;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .error-msg {
-            background-color: #ffe8e8;
-            color: #ff4757;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            border: 1px solid #ffcccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+    /* Streaming App Title Vibe (Sleek Gradient) */
+    .velohertz-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 42px;
+        margin-bottom: 30px;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    /* Modern Error Message */
+    .error-msg {
+        background-color: rgba(255, 71, 87, 0.1);
+        color: #ff6b81;
+        padding: 14px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        backdrop-filter: blur(5px);
+    }
 
-        .input-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
-        
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
-            width: 100%;
-            padding: 15px;
-            padding-right: 45px; 
-            border: 2px solid #e1e5ee;
-            border-radius: 16px; 
-            font-size: 15px;
-            background-color: #f8f9fa;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-        
-        .login-container input:focus {
-            border-color: #3b71ca;
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.2);
-        }
-        
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 20px;
-            user-select: none;
-            transition: 0.2s;
-            color: #888;
-        }
-        
-        .toggle-password:hover {
-            color: #3b71ca;
-        }
+    .input-wrapper { 
+        position: relative; 
+        width: 100%; 
+        margin-bottom: 22px; 
+    }
+    
+    /* Minimalist Dark Inputs */
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+        width: 100%;
+        padding: 16px 20px;
+        padding-right: 50px; 
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px; 
+        font-size: 14px;
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.03);
+        transition: all 0.3s ease;
+        outline: none;
+    }
 
-        /* --- Link Lupa Password --- */
-        .forgot-link {
-            display: block;
-            text-align: right;
-            margin-top: -10px; /* Biar deket sama kotak password */
-            margin-bottom: 15px;
-            font-size: 13px;
-            color: #3b71ca;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .forgot-link:hover {
-            text-decoration: underline;
-            color: #2a5298;
-        }
+    .login-container input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+        font-weight: 300;
+    }
+    
+    .login-container input:focus {
+        border-color: #74b9ff;
+        background-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 15px rgba(116, 185, 255, 0.1);
+    }
+    
+    /* Premium Icon Toggle (Masih support emoji bawaan kamu) */
+    .toggle-password {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        user-select: none;
+        transition: 0.3s;
+        /* Biar emoji monyetnya nggak terlalu redup di dark mode */
+        opacity: 0.8; 
+    }
+    
+    .toggle-password:hover {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1);
+    }
 
-        /* Tombol Masuk */
-        .login-container button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 16px; 
-            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .login-container button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(59, 113, 202, 0.3);
-        }
-        
-        .login-container button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+    /* Subtle Forgot Password Link */
+    .forgot-link {
+        display: block;
+        text-align: right;
+        margin-top: -12px;
+        margin-bottom: 25px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        font-weight: 400;
+        transition: color 0.3s ease;
+    }
+    
+    .forgot-link:hover {
+        color: #fff;
+    }
 
-        /* --- Link Daftar (Hijau Link Cerah) --- */
-        .register-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #10b981; /* Warna hijau cerah web link / Emerald */
-            text-decoration: underline; 
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .register-link:hover { 
-            color: #059669; /* Hijau yang lebih pekat dikit saat di-hover */
-        }
-    </style>
+    /* Gen-Z Glowing Button */
+    .login-container button {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 16px; 
+        background: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .login-container button:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3);
+    }
+    
+    .login-container button:disabled {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.3);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Clean Register Link */
+    .register-link {
+        display: inline-block;
+        margin-top: 25px;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none; 
+        font-size: 13px;
+        font-weight: 400;
+        transition: color 0.3s ease;
+    }
+    
+    .register-link:hover { 
+        color: #a29bfe; 
+    }
+</style>
 </head>
 <body>
 

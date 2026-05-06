@@ -57,148 +57,200 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        body { 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
+        /* Dark Mode + Modern Mesh Gradient Background (Sesuai dengan Login) */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
+            color: #fff;
+            padding: 20px;
         }
 
-        .container { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); 
-            padding: 40px; 
-            border-radius: 24px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        /* Glassmorphism Card */
+        .container {
+            background: rgba(20, 25, 35, 0.6);
+            padding: 45px 40px;
+            border-radius: 28px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 420px; 
-            text-align: center; 
-            border: 1px solid rgba(255,255,255,0.6); 
+            max-width: 420px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        h2 { 
+        /* Streaming App Title Vibe */
+        h2 {
             font-family: 'Outfit', sans-serif;
             font-weight: 800;
-            font-size: 32px; 
-            margin-bottom: 25px; 
-            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%);
+            font-size: 34px;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .input-group { margin-bottom: 18px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: 600; color: #475569; }
+        .input-group { margin-bottom: 22px; text-align: left; }
+        .input-group label { 
+            display: block; 
+            font-size: 13px; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: rgba(255, 255, 255, 0.7); 
+        }
         
+        /* Minimalist Dark Inputs */
         .input-group input { 
-            width: 100%; 
-            padding: 14px; 
+            width: 100%;
+            padding: 16px 20px;
+            padding-right: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px; 
-            border: 2px solid #e1e5ee; 
-            background: #f8f9fa; 
-            outline: none; 
-            transition: 0.3s; 
-            font-size: 14px; 
+            font-size: 14px;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
         }
 
         .input-group input:focus { 
-            border-color: #3b71ca; 
-            background: #ffffff; 
-            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1);
+            border-color: #74b9ff;
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(116, 185, 255, 0.1);
         }
         
         .password-wrapper { position: relative; }
         
+        /* Premium Icon Toggle (Menggunakan Emoji Sesuai Permintaan) */
         .toggle-password { 
-            position: absolute; 
-            right: 15px; 
-            top: 50%; 
-            transform: translateY(-50%); 
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
             background: none; 
             border: none; 
-            font-size: 20px; 
+            font-size: 18px; 
             cursor: pointer; 
-            padding: 0; 
+            opacity: 0.8;
+            transition: 0.3s;
+            padding: 0;
+            user-select: none;
+        }
+
+        .toggle-password:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
         }
         
-        /* Password Meter Style */
+        /* Password Meter - Dark Mode Version */
         .strength-meter { 
-            margin-top: 10px; 
-            padding: 12px; 
-            background: white; 
-            border-left: 4px solid #cbd5e1; 
-            border-radius: 12px; 
+            margin-top: 14px; 
+            padding: 14px; 
+            background: rgba(0, 0, 0, 0.2); 
+            border-left: 4px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 14px; 
             font-size: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
         }
         
         .strength-badge { 
             display: inline-block; 
-            padding: 2px 8px; 
-            border-radius: 6px; 
+            padding: 4px 10px; 
+            border-radius: 8px; 
             font-size: 10px; 
             font-weight: 700; 
             color: white; 
-            margin-bottom: 6px; 
-            background: #94a3b8;
+            margin-bottom: 8px; 
+            background: rgba(255, 255, 255, 0.2);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .recommendation { color: #64748b; line-height: 1.5; }
+        .recommendation { color: rgba(255, 255, 255, 0.5); line-height: 1.5; }
 
-        /* Tombol Daftar: Gradien Senada Login */
+        /* Gen-Z Glowing Button */
         .btn-submit { 
-            width: 100%; 
-            padding: 15px; 
-            background: linear-gradient(135deg, #3b71ca 0%, #74b9ff 100%); 
-            color: white; 
-            border: none; 
+            width: 100%;
+            padding: 16px;
+            border: none;
             border-radius: 16px; 
-            font-weight: 600; 
-            font-size: 16px; 
-            cursor: pointer; 
-            transition: transform 0.2s, box-shadow 0.2s; 
-            margin-top: 10px; 
+            background: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
         .btn-submit:hover:not(:disabled) { 
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(59, 113, 202, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3);
         }
 
-        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-submit:disabled { 
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
         
+        /* Modern Error Message */
         .error-msg { 
-            background: #ffe8e8; 
-            color: #ff4757; 
-            font-size: 13px; 
-            padding: 12px; 
-            margin-bottom: 20px; 
-            border-radius: 12px; 
-            border: 1px solid #ffcccc; 
+            background-color: rgba(255, 71, 87, 0.1);
+            color: #ff6b81;
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 71, 87, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            backdrop-filter: blur(5px);
         }
 
-        /* Link Kembali: Hijau Emerald Cerah */
+        /* Clean Login Link */
         .login-link { 
-            display: inline-block; 
-            font-size: 14px; 
-            color: #10b981; 
-            text-decoration: underline; 
-            margin-top: 20px; 
-            font-weight: 500; 
+            display: inline-block;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none; 
+            font-size: 13px;
+            font-weight: 400;
+            transition: color 0.3s ease;
         }
 
-        .login-link:hover { color: #059669; }
+        .login-link span {
+            color: #74b9ff;
+            font-weight: 500;
+        }
+
+        .login-link:hover span { 
+            text-decoration: underline;
+            color: #a29bfe; 
+        }
     </style>
 </head>
 <body>
@@ -242,7 +294,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" name="register" id="btn-submit" class="btn-submit" disabled>Daftar Sekarang</button>
         </form>
 
-        <a href="login.php" class="login-link">Sudah punya akun? Login disini</a>
+        <a href="login.php" class="login-link">Sudah punya akun? <span>Login disini</span></a>
     </div>
 
     <script>
@@ -262,36 +314,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             const syaratMutlak = "Wajib: Min. 8 Karakter, Huruf Besar, Angka, & Simbol.";
 
+            // Warna disesuaikan dengan tema Dark Mode Gen-Z
             if (val.length === 0) {
                 strengthBadge.textContent = "KOSONG";
-                strengthBadge.style.backgroundColor = "#94a3b8";
-                strengthBox.style.borderLeftColor = "#cbd5e1";
+                strengthBadge.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                strengthBox.style.borderLeftColor = "rgba(255, 255, 255, 0.2)";
                 recommendation.textContent = syaratMutlak;
                 btnSubmit.disabled = true;
             } else if (strength < 4) {
                 strengthBadge.textContent = "BELUM AMAN";
-                strengthBadge.style.backgroundColor = "#ff4757";
-                strengthBox.style.borderLeftColor = "#ff4757";
-                recommendation.innerHTML = "<b>Belum memenuhi syarat.</b> " + syaratMutlak;
+                strengthBadge.style.backgroundColor = "#ff6b81"; // Pastel Red
+                strengthBox.style.borderLeftColor = "#ff6b81";
+                recommendation.innerHTML = "<b>Belum memenuhi syarat.</b> <br>" + syaratMutlak;
                 btnSubmit.disabled = true; 
             } else if (strength === 4) {
                 strengthBadge.textContent = "SANGAT KUAT";
-                strengthBadge.style.backgroundColor = "#10b981";
-                strengthBox.style.borderLeftColor = "#10b981";
+                strengthBadge.style.backgroundColor = "#00cec9"; // Modern Cyan/Teal
+                strengthBox.style.borderLeftColor = "#00cec9";
                 recommendation.textContent = "Mantap! Password sudah aman.";
                 btnSubmit.disabled = false; 
             }
         }
 
+        // Logic toggle di-restore kembali pakai teks/emoji
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
-            if (input.type === "password") { 
-                input.type = "text"; 
-                icon.textContent = "🙈"; 
-            } else { 
-                input.type = "password"; 
-                icon.textContent = "🙉"; 
+            if (input.type === "password") {
+                input.type = "text";
+                icon.textContent = "🙈";
+            } else {
+                input.type = "password";
+                icon.textContent = "🙉";
             }
         }
     </script>

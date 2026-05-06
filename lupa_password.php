@@ -10,9 +10,6 @@ require 'vendor/autoload.php';
 $pesan = "";
 $step = isset($_SESSION['reset_step']) ? $_SESSION['reset_step'] : 1;
 
-// ==========================================
-// TAHAP 1: REQUEST OTP
-// ==========================================
 if (isset($_POST['kirim_otp'])) {
     $email = trim($_POST['email']);
     
@@ -32,7 +29,7 @@ if (isset($_POST['kirim_otp'])) {
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'jessileoo64@gmail.com';       // <-- Ganti email aslimu
-            $mail->Password   = 'yakqjewmnaciynob';   // <-- Ganti 16 huruf App Password
+            $mail->Password   = '';   // <-- Ganti 16 huruf App Password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
@@ -125,24 +122,31 @@ if (isset($_GET['cancel'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password - Velohertz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary: #3b71ca;
-            --primary-dark: #2a5298;
-            --emerald: #10b981;
-            --danger: #ff4757;
-            --text-main: #1e3c72;
-            --text-muted: #64748b;
+            /* Warna Gen-Z Dark Mode */
+            --primary: #74b9ff;
+            --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
+            --emerald: #00cec9;
+            --danger: #ff6b81;
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --app-bg-color: #0b0f19;
+            --glass-bg: rgba(20, 25, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
+            background-color: var(--app-bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 113, 202, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(116, 185, 255, 0.1) 0px, transparent 50%);
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -151,15 +155,16 @@ if (isset($_GET['cancel'])) {
         }
 
         .container { 
-            background: rgba(255, 255, 255, 0.7); 
+            background: var(--glass-bg); 
             backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
             padding: 40px; 
             border-radius: 30px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
             width: 100%; 
             max-width: 400px; 
             text-align: center; 
-            border: 1px solid rgba(255,255,255,0.5); 
+            border: 1px solid var(--glass-border); 
         }
 
         h2 { 
@@ -167,60 +172,67 @@ if (isset($_GET['cancel'])) {
             font-size: 32px; 
             margin-bottom: 25px; 
             margin-top: 0; 
-            color: var(--primary); 
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             letter-spacing: -1px;
         }
 
         .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6; }
 
         .input-group { margin-bottom: 20px; text-align: left; position: relative; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); }
         
         .input-group input { 
             width: 100%; padding: 14px 18px; border-radius: 16px; 
-            border: 2px solid #e1e5ee; background: #fff; 
+            border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); 
+            color: var(--text-main);
             outline: none; transition: 0.3s; font-size: 14px; font-family: inherit; 
         }
+        .input-group input::placeholder { color: rgba(255, 255, 255, 0.3); }
         .input-group input:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px rgba(59, 113, 202, 0.1); 
+            border-color: var(--primary); background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); 
         }
         
         .password-wrapper { position: relative; }
         .toggle-password { 
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
-            background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); 
+            background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); opacity: 0.8; transition: 0.3s;
         }
+        .toggle-password:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
         
-        /* CSS INDIKATOR PASSWORD */
+        /* CSS INDIKATOR PASSWORD DARK MODE */
         .strength-meter { 
-            margin-top: 12px; padding: 15px; background: rgba(255,255,255,0.8); 
-            border-left: 4px solid #94a3b8; border-radius: 12px; text-align: left;
+            margin-top: 14px; padding: 15px; background: rgba(0, 0, 0, 0.2); 
+            border-left: 4px solid rgba(255, 255, 255, 0.2); border-radius: 14px; text-align: left;
+            transition: all 0.3s ease;
         }
         .strength-badge { 
             display: inline-block; padding: 4px 10px; border-radius: 8px; 
-            font-size: 11px; font-weight: 700; color: white; margin-bottom: 8px; 
-            background: #94a3b8; letter-spacing: 1px;
+            font-size: 10px; font-weight: 700; color: white; margin-bottom: 8px; 
+            background: rgba(255, 255, 255, 0.2); letter-spacing: 0.5px; text-transform: uppercase;
+            transition: all 0.3s ease;
         }
         .recommendation { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
         .btn-submit { 
-            width: 100%; padding: 15px; background: var(--primary); 
+            width: 100%; padding: 15px; background: var(--primary-grad); 
             color: white; border: none; border-radius: 16px; 
             font-weight: 600; font-size: 15px; cursor: pointer; 
-            transition: 0.3s; margin-top: 10px; font-family: inherit;
+            transition: 0.3s; margin-top: 10px; font-family: inherit; letter-spacing: 0.5px;
         }
-        .btn-submit:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 113, 202, 0.2); }
-        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
+        .btn-submit:disabled { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.3); cursor: not-allowed; box-shadow: none; }
         
         .btn-cancel { 
             display: inline-block; font-size: 14px; color: var(--text-muted); 
-            text-decoration: underline; font-weight: 600; margin-top: 20px; transition: 0.3s;
+            text-decoration: none; font-weight: 400; margin-top: 20px; transition: 0.3s;
         }
-        .btn-cancel:hover { color: var(--danger); }
+        .btn-cancel:hover { color: var(--danger); text-decoration: underline; }
 
-        .error-msg { background: #ffe8e8; color: var(--danger); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid #ffcccc; text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500;}
-        .success-msg { background: #e8fff3; color: var(--emerald); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid #c2f3d6; text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500;}
+        .error-msg { background: rgba(255, 71, 87, 0.1); color: var(--danger); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid rgba(255, 71, 87, 0.3); text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px);}
+        .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); font-size: 13px; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 1px solid rgba(0, 206, 201, 0.3); text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px);}
     </style>
 </head>
 <body>
@@ -283,7 +295,7 @@ if (isset($_GET['cancel'])) {
     </div>
 
     <script>
-        // JS RAHASIA (Sama Persis Kayak Register)
+        // JS RAHASIA (Diupdate sesuai palet warna Dark Mode)
         function checkPasswordStrength() {
             const val = document.getElementById("new_password").value;
             const strengthBadge = document.getElementById("strengthBadge");
@@ -302,24 +314,24 @@ if (isset($_GET['cancel'])) {
 
             if (val.length === 0) {
                 strengthBadge.textContent = "KOSONG";
-                strengthBadge.style.backgroundColor = "#94a3b8";
-                strengthBox.style.borderLeftColor = "#94a3b8";
+                strengthBadge.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                strengthBox.style.borderLeftColor = "rgba(255, 255, 255, 0.2)";
                 recommendation.textContent = syaratMutlak;
-                recommendation.style.color = "#64748b";
+                recommendation.style.color = "rgba(255, 255, 255, 0.5)";
                 btnSubmit.disabled = true;
             } else if (strength < 4) {
                 strengthBadge.textContent = "BELUM AMAN";
-                strengthBadge.style.backgroundColor = "#ff4757";
-                strengthBox.style.borderLeftColor = "#ff4757";
+                strengthBadge.style.backgroundColor = "#ff6b81";
+                strengthBox.style.borderLeftColor = "#ff6b81";
                 recommendation.innerHTML = "<b>Password ditolak.</b> Pastikan memenuhi semua " + syaratMutlak;
-                recommendation.style.color = "#ff4757";
+                recommendation.style.color = "#ff6b81";
                 btnSubmit.disabled = true; 
             } else if (strength === 4) {
                 strengthBadge.textContent = "SANGAT KUAT";
-                strengthBadge.style.backgroundColor = "#10b981";
-                strengthBox.style.borderLeftColor = "#10b981";
+                strengthBadge.style.backgroundColor = "#00cec9";
+                strengthBox.style.borderLeftColor = "#00cec9";
                 recommendation.textContent = "Sempurna! Password memenuhi standar keamanan.";
-                recommendation.style.color = "#10b981";
+                recommendation.style.color = "#00cec9";
                 btnSubmit.disabled = false; 
             }
         }
