@@ -15,7 +15,6 @@ $pid = $conn->real_escape_string($_GET['pid']);
 $username = $_SESSION['username'];
 $pesan = "";
 
-// --- 1. LOGIKA EDIT (PHP ASLI) ---
 if (isset($_POST['edit_playlist'])) {
     $new_title = $conn->real_escape_string($_POST['new_title']);
     $new_desc = $conn->real_escape_string($_POST['new_desc']);
@@ -24,14 +23,12 @@ if (isset($_POST['edit_playlist'])) {
     }
 }
 
-// --- 2. LOGIKA HAPUS (PHP ASLI) ---
 if (isset($_POST['hapus_lagu'])) {
     $tid_hapus = $conn->real_escape_string($_POST['tid_hapus']);
     $conn->query("DELETE FROM playlistcontain WHERE pid='$pid' AND tid='$tid_hapus'");
     $pesan = "<div class='error-msg'><i class='fa-solid fa-trash'></i> Lagu dihapus.</div>";
 }
 
-// --- 3. LOGIKA TAMBAH (PHP ASLI) ---
 if (isset($_POST['tambah_ke_playlist'])) {
     $tid_tambah = $conn->real_escape_string($_POST['tid_tambah']);
     $conn->query("INSERT INTO playlistcontain (pid, tid) VALUES ('$pid', '$tid_tambah')");
@@ -52,7 +49,6 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -73,7 +69,6 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
         color: var(--text-main); display: flex; overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR (SINKRON TOTAL 260PX) --- */
     .sidebar { 
         width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
         padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
@@ -94,7 +89,6 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER (SINKRON POSISI & SIZE) --- */
     .hamburger-menu { 
         position: fixed; top: 32px; left: 25px; z-index: 1100; 
         background: var(--primary-grad); color: white; border: none; 
@@ -105,7 +99,6 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- CONTENT --- */
     .main-content { 
         margin-left: 280px; padding: 40px 60px; width: 100%; 
         transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; 
@@ -116,7 +109,6 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 30px; color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; opacity: 0.8;}
     .back-link:hover { opacity: 1; transform: translateX(-5px); }
 
-    /* Hero Section Dark Mode */
     .hero-section { 
         display: flex; align-items: center; gap: 35px; margin-bottom: 40px; padding: 35px; 
         background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: 30px; 
@@ -138,11 +130,9 @@ $pl_img = "https://picsum.photos/seed/playlist_" . urlencode($pid) . "/400/400";
     .btn-play-small:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
     .btn-play-small i { margin-left: 2px; }
 
-    /* Alert Dark Mode */
     .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
     .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
 
-    /* Khusus untuk form edit di dalam hero-section */
     #edit_form textarea {
         background: rgba(0, 0, 0, 0.2);
         color: var(--text-main);

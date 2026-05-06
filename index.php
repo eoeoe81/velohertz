@@ -8,11 +8,9 @@ include 'koneksi.php';
 
 $username = $_SESSION['username'];
 
-// 1. AMBIL 10 LAGU TERBARU
 $sql_tracks = "SELECT t.*, a.atitle FROM Track t LEFT JOIN Album a ON t.alid = a.alid ORDER BY t.tid DESC LIMIT 10";
 $result_tracks = $conn->query($sql_tracks);
 
-// 2. AMBIL 5 ALBUM ACAK 
 $sql_albums = "SELECT * FROM Album ORDER BY RAND() LIMIT 5";
 $result_albums = $conn->query($sql_albums);
 
@@ -30,7 +28,6 @@ $no = 1;
     
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -53,7 +50,6 @@ $no = 1;
         overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR --- */
     .sidebar { 
         width: 260px; 
         background: rgba(20, 25, 35, 0.4); 
@@ -72,7 +68,6 @@ $no = 1;
     
     .sidebar h2 { 
         font-family: 'Outfit', sans-serif; 
-        /* Gradient Title */
         background: var(--primary-grad);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -89,7 +84,6 @@ $no = 1;
 
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER MENU --- */
     .hamburger-menu {
         position: fixed; 
         top: 32px; 
@@ -111,7 +105,6 @@ $no = 1;
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT --- */
     .main-content { 
         margin-left: 300px; 
         padding: 40px; 
@@ -143,7 +136,6 @@ $no = 1;
     td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
     tr:hover td { background: rgba(255, 255, 255, 0.1); }
 
-    /* --- TOMBOL PLAY --- */
     .btn-play-table { 
         background: var(--primary-grad); color: white; border: none; 
         width: 36px; height: 36px; border-radius: 50%; cursor: pointer; 
@@ -153,7 +145,6 @@ $no = 1;
     .btn-play-table i { margin-left: 2px; }
     .btn-play-table:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(162, 155, 254, 0.3); }
 
-    /* --- PLAYER BAR --- */
     .player-bar { 
         position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; 
         background: rgba(11, 15, 25, 0.85); 
@@ -184,7 +175,6 @@ $no = 1;
     .player-right { width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
     .vol-slider { width: 90px !important; }
 
-    /* --- RESPONSIVE FIXES --- */
     @media (max-width: 768px) {
         .sidebar { width: 260px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
         .main-content, .main-content.full-width { margin-left: 0 !important; padding: 80px 20px 120px 20px !important; width: 100vw !important; box-sizing: border-box; }
@@ -199,7 +189,7 @@ $no = 1;
         .player-left { width: 50% !important; }
         .player-center { width: 50% !important; }
     }
-</style>
+    </style>
 </head>
 <body>
 
@@ -240,20 +230,19 @@ $no = 1;
             <h3 style="font-family: 'Outfit', sans-serif; font-size: 22px; margin-bottom: 20px;">Rekomendasi Album 💿</h3>
 
             <div class="album-grid">
-    <?php
-    if ($result_albums && $result_albums->num_rows > 0) {
-        while($alb = $result_albums->fetch_assoc()) {
-            // SEED DIGANTI KE ID (alid) BIAR GAMBARNYA BEDA TIAP ALBUM
-            $album_cover = "https://picsum.photos/seed/album_" . $alb['alid'] . "/200/200";
-            echo "<a href='view_album.php?alid=" . $alb['alid'] . "' class='album-card'>";
-            echo "<img src='$album_cover' class='album-cover'>";
-            echo "<div style='font-weight:700; font-size:14px; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>" . htmlspecialchars($alb['atitle']) . "</div>";
-            echo "<div style='font-size:12px; color:var(--text-muted);'>Rilis: " . htmlspecialchars($alb['adate']) . "</div>";
-            echo "</a>";
-        }
-    }
-    ?>
-</div>
+            <?php
+            if ($result_albums && $result_albums->num_rows > 0) {
+                while($alb = $result_albums->fetch_assoc()) {
+                    $album_cover = "https://picsum.photos/seed/album_" . $alb['alid'] . "/200/200";
+                    echo "<a href='view_album.php?alid=" . $alb['alid'] . "' class='album-card'>";
+                    echo "<img src='$album_cover' class='album-cover'>";
+                    echo "<div style='font-weight:700; font-size:14px; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>" . htmlspecialchars($alb['atitle']) . "</div>";
+                    echo "<div style='font-size:12px; color:var(--text-muted);'>Rilis: " . htmlspecialchars($alb['adate']) . "</div>";
+                    echo "</a>";
+                }
+            }
+            ?>
+            </div>
 
             <h3 style="font-family: 'Outfit', sans-serif; font-size: 22px;">Top 10 Lagu Terpopuler 🔥</h3>
             <table>
@@ -263,12 +252,14 @@ $no = 1;
                         $index_js = 0; 
                         while($row = $result_tracks->fetch_assoc()) {
                             $gambar_cover = "https://picsum.photos/seed/" . urlencode($row['ttitle']) . "/100/100";
+                            
                             $songs_array[] = [
                                 'title' => htmlspecialchars($row["ttitle"], ENT_QUOTES),
                                 'artist' => htmlspecialchars($row["aname"] ?? 'Artis', ENT_QUOTES),
-                                'file' => 'music/' . $no . '.mp3',
+                                'file' => 'music/' . $row["ttitle"] . '.mp3', 
                                 'cover' => $gambar_cover 
                             ];
+                            
                             echo "<tr>";
                             echo "<td style='width:30px; font-weight:bold; color:var(--text-muted);'>" . $no++ . "</td>";
                             echo "<td><div style='display:flex; align-items:center; gap:12px;'>";
@@ -404,7 +395,6 @@ $no = 1;
         updateSliderFill(volumeSlider);
         audio.addEventListener('ended', nextSong);
 
-        // --- SCRIPT HAMBURGER INGATAN & MOBILE FIX ---
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');

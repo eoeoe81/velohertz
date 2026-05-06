@@ -10,11 +10,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // 1. Cek Konfirmasi Password Dulu
     if ($password !== $confirm_password) {
         $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Konfirmasi password tidak cocok!</div>";
     } else {
-        // 2. Cek apakah Username atau Email sudah terdaftar
         $stmt_cek = $conn->prepare("SELECT uid FROM user WHERE uname = ? OR email = ?");
         $stmt_cek->bind_param("ss", $username, $email);
         $stmt_cek->execute();
@@ -23,7 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt_cek->num_rows > 0) {
             $pesan = "<div class='error-msg'><i class='fa-solid fa-user-xmark'></i> Username atau Email sudah terdaftar!</div>";
         } else {
-            // 3. Validasi Regex Server
             $uppercase = preg_match('@[A-Z]@', $password);
             $lowercase = preg_match('@[a-z]@', $password);
             $number    = preg_match('@[0-9]@', $password);
@@ -32,10 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!$uppercase || !$lowercase || !$number || !$special || strlen($password) < 8) {
                 $pesan = "<div class='error-msg'><i class='fa-solid fa-shield'></i> Password gagal memenuhi standar keamanan server!</div>";
             } else {
-                // 4. BCRYPT HASHING
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-                // 5. Simpan ke DB
                 $stmt_insert = $conn->prepare("INSERT INTO user (uname, email, upassword) VALUES (?, ?, ?)");
                 $stmt_insert->bind_param("sss", $username, $email, $hashed_password);
 
@@ -63,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        /* Dark Mode + Modern Mesh Gradient Background (Sesuai dengan Login) */
         body {
             min-height: 100vh;
             display: flex;
@@ -77,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 20px;
         }
 
-        /* Glassmorphism Card */
         .container {
             background: rgba(20, 25, 35, 0.6);
             padding: 45px 40px;
@@ -91,7 +84,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Streaming App Title Vibe */
         h2 {
             font-family: 'Outfit', sans-serif;
             font-weight: 800;
@@ -112,7 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: rgba(255, 255, 255, 0.7); 
         }
         
-        /* Minimalist Dark Inputs */
         .input-group input { 
             width: 100%;
             padding: 16px 20px;
@@ -139,7 +130,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         .password-wrapper { position: relative; }
         
-        /* Premium Icon Toggle (Menggunakan Emoji Sesuai Permintaan) */
         .toggle-password { 
             position: absolute;
             right: 18px;
@@ -160,7 +150,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             transform: translateY(-50%) scale(1.1);
         }
         
-        /* Password Meter - Dark Mode Version */
         .strength-meter { 
             margin-top: 14px; 
             padding: 14px; 
@@ -186,7 +175,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .recommendation { color: rgba(255, 255, 255, 0.5); line-height: 1.5; }
 
-        /* Gen-Z Glowing Button */
         .btn-submit { 
             width: 100%;
             padding: 16px;
@@ -214,7 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-shadow: none;
         }
         
-        /* Modern Error Message */
         .error-msg { 
             background-color: rgba(255, 71, 87, 0.1);
             color: #ff6b81;
@@ -231,7 +218,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             backdrop-filter: blur(5px);
         }
 
-        /* Clean Login Link */
         .login-link { 
             display: inline-block;
             margin-top: 25px;
@@ -314,7 +300,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             const syaratMutlak = "Wajib: Min. 8 Karakter, Huruf Besar, Angka, & Simbol.";
 
-            // Warna disesuaikan dengan tema Dark Mode Gen-Z
             if (val.length === 0) {
                 strengthBadge.textContent = "KOSONG";
                 strengthBadge.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
@@ -323,20 +308,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 btnSubmit.disabled = true;
             } else if (strength < 4) {
                 strengthBadge.textContent = "BELUM AMAN";
-                strengthBadge.style.backgroundColor = "#ff6b81"; // Pastel Red
+                strengthBadge.style.backgroundColor = "#ff6b81"; 
                 strengthBox.style.borderLeftColor = "#ff6b81";
                 recommendation.innerHTML = "<b>Belum memenuhi syarat.</b> <br>" + syaratMutlak;
                 btnSubmit.disabled = true; 
             } else if (strength === 4) {
                 strengthBadge.textContent = "SANGAT KUAT";
-                strengthBadge.style.backgroundColor = "#00cec9"; // Modern Cyan/Teal
+                strengthBadge.style.backgroundColor = "#00cec9"; 
                 strengthBox.style.borderLeftColor = "#00cec9";
                 recommendation.textContent = "Mantap! Password sudah aman.";
                 btnSubmit.disabled = false; 
             }
         }
 
-        // Logic toggle di-restore kembali pakai teks/emoji
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);

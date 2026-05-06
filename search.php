@@ -38,7 +38,6 @@ if (isset($_POST['tambah_lagu'])) {
     
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -46,7 +45,7 @@ if (isset($_POST['tambah_lagu'])) {
         --glass-border: rgba(255, 255, 255, 0.08);
         --text-main: #ffffff;
         --text-muted: rgba(255, 255, 255, 0.5);
-        --emerald: #00cec9; /* Modern Cyan/Teal (Senada sama password meter) */
+        --emerald: #00cec9; 
     }
     
     body { 
@@ -62,7 +61,6 @@ if (isset($_POST['tambah_lagu'])) {
         overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR (Sama dengan Index) --- */
     .sidebar { 
         width: 260px; 
         background: rgba(20, 25, 35, 0.4); 
@@ -95,7 +93,6 @@ if (isset($_POST['tambah_lagu'])) {
     .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER --- */
     .hamburger-menu {
         position: fixed; top: 32px; left: 25px; z-index: 1100;
         background: var(--primary-grad); color: white; border: none;
@@ -106,7 +103,6 @@ if (isset($_POST['tambah_lagu'])) {
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT --- */
     .main-content { 
         margin-left: 260px; padding: 40px; width: 100%;
         transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
@@ -117,7 +113,6 @@ if (isset($_POST['tambah_lagu'])) {
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
     .header h2 { font-family: 'Outfit', sans-serif; font-size: 30px; }
 
-    /* --- SEARCH FORM --- */
     .form-box { 
         background: var(--glass-bg); 
         backdrop-filter: blur(12px); 
@@ -131,7 +126,6 @@ if (isset($_POST['tambah_lagu'])) {
     
     .search-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
     
-    /* Dark Minimalist Search Box */
     .search-box { 
         flex-grow: 1; 
         min-width: 250px; 
@@ -163,7 +157,6 @@ if (isset($_POST['tambah_lagu'])) {
     }
     .btn-search:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
 
-    /* --- RESULTS TABLE --- */
     table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 50px;}
     th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; }
     td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 14px;}
@@ -171,7 +164,6 @@ if (isset($_POST['tambah_lagu'])) {
     td:last-child { border-right: 1px solid var(--glass-border); border-radius: 0 15px 15px 0; }
     tr:hover td { background: rgba(255, 255, 255, 0.1); }
 
-    /* --- PLAY & ADD BUTTONS --- */
     .play-icon-btn { 
         background: var(--primary-grad); 
         color: white; 
@@ -198,7 +190,6 @@ if (isset($_POST['tambah_lagu'])) {
     }
     .btn-add:hover { filter: brightness(1.1); transform: scale(1.05); }
 
-    /* Dropdown Playlist di Dark Mode */
     select[name='pid'] { 
         padding: 10px; 
         border-radius: 12px; 
@@ -208,17 +199,14 @@ if (isset($_POST['tambah_lagu'])) {
         font-size: 13px; 
         color: #fff; 
     }
-    /* Mengubah warna latar belakang opsi dropdown agar teks putih bisa dibaca */
     select[name='pid'] option {
         background: #0b0f19;
         color: #fff;
     }
 
-    /* --- ALERTS --- */
     .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
     .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
 
-    /* --- OBAT ANTI GESER KIRI-KANAN DI HP / IPHONE --- */
     @media (max-width: 768px) {
         html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100%; }
         *, *::before, *::after { box-sizing: border-box !important; }
@@ -335,12 +323,10 @@ if (isset($_POST['tambah_lagu'])) {
             const mainContent = document.getElementById('mainContent');
             const state = localStorage.getItem('sidebarState');
             
-            // Auto tutup kalau layarnya seukuran HP
             if (window.innerWidth <= 768) {
                 sidebar.classList.add('hidden');
                 mainContent.classList.add('full-width');
             } 
-            // Ingat pilihan terakhir user di desktop
             else if (state === 'hidden') {
                 sidebar.classList.add('hidden');
                 mainContent.classList.add('full-width');
@@ -353,7 +339,6 @@ if (isset($_POST['tambah_lagu'])) {
             sidebar.classList.toggle('hidden');
             mainContent.classList.toggle('full-width');
             
-            // Simpan ingatan ke browser
             localStorage.setItem('sidebarState', sidebar.classList.contains('hidden') ? 'hidden' : 'visible');
         }
     </script>

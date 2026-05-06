@@ -2,7 +2,6 @@
 session_start();
 include 'koneksi.php';
 
-// Kalau sudah login, langsung ke index
 if (isset($_SESSION['username'])) {
     header("Location: index.php");
     exit();
@@ -10,12 +9,10 @@ if (isset($_SESSION['username'])) {
 
 $pesan = "";
 
-// 1. SISTEM ANTI BRUTE-FORCE (Rate Limiting)
 if (!isset($_SESSION['login_attempts'])) {
     $_SESSION['login_attempts'] = 0;
 }
 
-// Cek apakah user sedang dalam masa "Lockout" (Dikunci)
 if (isset($_SESSION['lockout_time']) && time() < $_SESSION['lockout_time']) {
     $wait_time = $_SESSION['lockout_time'] - time();
     $pesan = "<div class='error-msg'><i class='fa-solid fa-lock'></i> Terlalu banyak percobaan salah. Silakan tunggu <b>$wait_time detik</b> lagi.</div>";
@@ -28,7 +25,6 @@ if (isset($_POST['login']) && !$lockout) {
     $username_input = $conn->real_escape_string(trim($_POST['username']));
     $password_input = $_POST['password'];
 
-    // Cek user berdasarkan email ATAU username
     $stmt = $conn->prepare("SELECT uid, uname, upassword FROM User WHERE uname = ? OR email = ?");
     $stmt->bind_param("ss", $username_input, $username_input);
     $stmt->execute();
@@ -37,9 +33,7 @@ if (isset($_POST['login']) && !$lockout) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        // 2. VERIFIKASI HASH PASSWORD
         if (password_verify($password_input, $row['upassword'])) {
-            // Berhasil login! Reset percobaan salah
             $_SESSION['login_attempts'] = 0;
             unset($_SESSION['lockout_time']);
             
@@ -48,12 +42,11 @@ if (isset($_POST['login']) && !$lockout) {
             header("Location: index.php");
             exit();
         } else {
-            // Salah password -> Tambah attempt
             $_SESSION['login_attempts'] += 1;
             $sisa = 3 - $_SESSION['login_attempts'];
             
             if ($_SESSION['login_attempts'] >= 3) {
-                $_SESSION['lockout_time'] = time() + 30; // Kunci 30 detik
+                $_SESSION['lockout_time'] = time() + 900; 
                 $pesan = "<div class='error-msg'><i class='fa-solid fa-shield-halved'></i> Akses diblokir! Terlalu banyak percobaan. Tunggu 30 detik.</div>";
             } else {
                 $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Password salah! Sisa percobaan: $sisa</div>";
@@ -76,7 +69,6 @@ if (isset($_POST['login']) && !$lockout) {
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     
-    /* Dark Mode + Modern Mesh Gradient Background */
     body {
         min-height: 100vh;
         display: flex;
@@ -89,7 +81,6 @@ if (isset($_POST['login']) && !$lockout) {
         color: #fff;
     }
     
-    /* Glassmorphism Card */
     .login-container {
         background: rgba(20, 25, 35, 0.6);
         padding: 45px 40px;
@@ -103,7 +94,6 @@ if (isset($_POST['login']) && !$lockout) {
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* Streaming App Title Vibe (Sleek Gradient) */
     .velohertz-title {
         font-family: 'Outfit', sans-serif;
         font-weight: 800;
@@ -115,7 +105,6 @@ if (isset($_POST['login']) && !$lockout) {
         -webkit-text-fill-color: transparent;
     }
     
-    /* Modern Error Message */
     .error-msg {
         background-color: rgba(255, 71, 87, 0.1);
         color: #ff6b81;
@@ -138,7 +127,6 @@ if (isset($_POST['login']) && !$lockout) {
         margin-bottom: 22px; 
     }
     
-    /* Minimalist Dark Inputs */
     .login-container input[type="text"],
     .login-container input[type="password"] {
         width: 100%;
@@ -164,7 +152,6 @@ if (isset($_POST['login']) && !$lockout) {
         box-shadow: 0 0 15px rgba(116, 185, 255, 0.1);
     }
     
-    /* Premium Icon Toggle (Masih support emoji bawaan kamu) */
     .toggle-password {
         position: absolute;
         right: 18px;
@@ -174,7 +161,6 @@ if (isset($_POST['login']) && !$lockout) {
         font-size: 18px;
         user-select: none;
         transition: 0.3s;
-        /* Biar emoji monyetnya nggak terlalu redup di dark mode */
         opacity: 0.8; 
     }
     
@@ -183,7 +169,6 @@ if (isset($_POST['login']) && !$lockout) {
         transform: translateY(-50%) scale(1.1);
     }
 
-    /* Subtle Forgot Password Link */
     .forgot-link {
         display: block;
         text-align: right;
@@ -200,7 +185,6 @@ if (isset($_POST['login']) && !$lockout) {
         color: #fff;
     }
 
-    /* Gen-Z Glowing Button */
     .login-container button {
         width: 100%;
         padding: 16px;
@@ -227,7 +211,6 @@ if (isset($_POST['login']) && !$lockout) {
         box-shadow: none;
     }
 
-    /* Clean Register Link */
     .register-link {
         display: inline-block;
         margin-top: 25px;

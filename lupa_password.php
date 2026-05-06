@@ -55,9 +55,6 @@ if (isset($_POST['kirim_otp'])) {
     }
 }
 
-// ==========================================
-// TAHAP 2: VERIFIKASI OTP
-// ==========================================
 if (isset($_POST['verifikasi_otp'])) {
     $input_otp = trim($_POST['otp']);
     
@@ -70,19 +67,14 @@ if (isset($_POST['verifikasi_otp'])) {
     }
 }
 
-// ==========================================
-// TAHAP 3: UPDATE PASSWORD BARU (DENGAN KONFIRMASI)
-// ==========================================
 if (isset($_POST['reset_password'])) {
     $new_pass = $_POST['new_password'];
     $confirm_pass = $_POST['confirm_password'];
     $email = $_SESSION['reset_email'];
 
-    // 1. Cek apakah password dan konfirmasi sama
     if ($new_pass !== $confirm_pass) {
         $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Konfirmasi password tidak cocok!</div>";
     } else {
-        // 2. Validasi Regex Server (Anti bypass JS)
         $uppercase = preg_match('@[A-Z]@', $new_pass);
         $lowercase = preg_match('@[a-z]@', $new_pass);
         $number    = preg_match('@[0-9]@', $new_pass);
@@ -91,7 +83,6 @@ if (isset($_POST['reset_password'])) {
         if (!$uppercase || !$lowercase || !$number || !$special || strlen($new_pass) < 8) {
             $pesan = "<div class='error-msg'><i class='fa-solid fa-shield'></i> Password Terlalu Lemah atau gagal memenuhi standar keamanan server!</div>";
         } else {
-            // 3. Hashing & Update DB
             $hashed_password = password_hash($new_pass, PASSWORD_BCRYPT);
             
             $stmt_update = $conn->prepare("UPDATE user SET upassword = ? WHERE email = ?");
@@ -108,7 +99,6 @@ if (isset($_POST['reset_password'])) {
     }
 }
 
-// Batal / Reset Ulang
 if (isset($_GET['cancel'])) {
     session_destroy();
     header("Location: lupa_password.php");
@@ -127,7 +117,6 @@ if (isset($_GET['cancel'])) {
     
     <style>
         :root {
-            /* Warna Gen-Z Dark Mode */
             --primary: #74b9ff;
             --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
             --emerald: #00cec9;
@@ -202,7 +191,6 @@ if (isset($_GET['cancel'])) {
         }
         .toggle-password:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
         
-        /* CSS INDIKATOR PASSWORD DARK MODE */
         .strength-meter { 
             margin-top: 14px; padding: 15px; background: rgba(0, 0, 0, 0.2); 
             border-left: 4px solid rgba(255, 255, 255, 0.2); border-radius: 14px; text-align: left;
@@ -295,7 +283,6 @@ if (isset($_GET['cancel'])) {
     </div>
 
     <script>
-        // JS RAHASIA (Diupdate sesuai palet warna Dark Mode)
         function checkPasswordStrength() {
             const val = document.getElementById("new_password").value;
             const strengthBadge = document.getElementById("strengthBadge");

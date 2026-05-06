@@ -1,6 +1,5 @@
 <?php
 session_start();
-// PROTEKSI HALAMAN: Cuma 'admin' yang boleh masuk!
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') { 
     header("Location: index.php"); 
     exit(); 
@@ -9,7 +8,55 @@ include 'koneksi.php';
 
 $pesan = "";
 
-// 1. LOGIKA TAMBAH ALBUM BARU
+if (isset($_POST['upload_file_lagu'])) {
+    $total_files = count($_FILES['lagu']['name']);
+    $max_files = 10;
+    
+    $bulk_aname = $conn->real_escape_string($_POST['bulk_aname']);
+    $bulk_alid = $conn->real_escape_string($_POST['bulk_alid']);
+    $duration = 200000; 
+
+    if ($total_files > $max_files) {
+        $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Gagal: Maksimal upload 10 lagu sekaligus!</div>";
+    } else {
+        $berhasil = 0;
+        $gagal = 0;
+        $folder_tujuan = "music/";
+
+        if (!is_dir($folder_tujuan)) {
+            mkdir($folder_tujuan, 0777, true);
+        }
+
+        for ($i = 0; $i < $total_files; $i++) {
+            if ($_FILES['lagu']['error'][$i] === UPLOAD_ERR_OK) {
+                $nama_file = basename($_FILES['lagu']['name'][$i]);
+                $tmp_file = $_FILES['lagu']['tmp_name'][$i];
+                
+                if (move_uploaded_file($tmp_file, $folder_tujuan . $nama_file)) {
+                    
+                    $tid = uniqid('trk_'); 
+                    $judul_lagu = $conn->real_escape_string(pathinfo($nama_file, PATHINFO_FILENAME)); 
+                    
+                    try {
+                        $conn->query("INSERT INTO Track (tid, ttitle, duration, aname, alid) VALUES ('$tid', '$judul_lagu', '$duration', '$bulk_aname', '$bulk_alid')");
+                        $berhasil++;
+                    } catch (mysqli_sql_exception $e) {
+                        $gagal++;
+                    }
+                } else {
+                    $gagal++;
+                }
+            }
+        }
+        
+        if ($berhasil > 0) {
+            $pesan = "<div class='success-msg'><i class='fa-solid fa-circle-check'></i> Berhasil upload dan menambah $berhasil lagu ke database!</div>";
+        } else {
+            $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Gagal mengupload file ke database. Pastikan format benar.</div>";
+        }
+    }
+}
+
 if (isset($_POST['tambah_album'])) {
     $alid = uniqid('alb_'); 
     $atitle = $conn->real_escape_string($_POST['atitle']);
@@ -24,7 +71,6 @@ if (isset($_POST['tambah_album'])) {
     }
 }
 
-// 2. LOGIKA EDIT ALBUM (FITUR BARU)
 if (isset($_POST['edit_album'])) {
     $edit_alid = $conn->real_escape_string($_POST['edit_alid']);
     $edit_atitle = $conn->real_escape_string($_POST['edit_atitle']);
@@ -39,7 +85,21 @@ if (isset($_POST['edit_album'])) {
     }
 }
 
-// 3. LOGIKA HAPUS ALBUM (FITUR BARU)
+if (isset($_POST['edit_lagu'])) {
+    $edit_tid = $conn->real_escape_string($_POST['edit_tid']);
+    $edit_ttitle = $conn->real_escape_string($_POST['edit_ttitle']);
+    $edit_aname = $conn->real_escape_string($_POST['edit_aname']);
+    $edit_alid = $conn->real_escape_string($_POST['edit_alid']);
+
+    try {
+        if ($conn->query("UPDATE Track SET ttitle='$edit_ttitle', aname='$edit_aname', alid='$edit_alid' WHERE tid='$edit_tid'") === TRUE) {
+            $pesan = "<div class='success-msg'><i class='fa-solid fa-circle-check'></i> Detail Lagu '$edit_ttitle' berhasil diperbarui!</div>";
+        }
+    } catch (mysqli_sql_exception $e) {
+        $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Gagal mengedit lagu: " . $conn->error . "</div>";
+    }
+}
+
 if (isset($_POST['hapus_album'])) {
     $hapus_alid = $conn->real_escape_string($_POST['hapus_alid']);
     try {
@@ -50,28 +110,6 @@ if (isset($_POST['hapus_album'])) {
     }
 }
 
-// 4. LOGIKA TAMBAH LAGU
-if (isset($_POST['tambah_lagu'])) {
-    $tid = uniqid('trk_'); 
-    $ttitle = $conn->real_escape_string($_POST['ttitle']);
-    $aname = $conn->real_escape_string($_POST['aname']);
-    $alid = isset($_POST['alid']) ? $conn->real_escape_string($_POST['alid']) : ''; 
-    $duration = 200000; 
-
-    if (empty($alid)) {
-        $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Gagal: Silakan cari dan KLIK nama album dari daftar!</div>";
-    } else {
-        try {
-            if ($conn->query("INSERT INTO Track (tid, ttitle, duration, aname, alid) VALUES ('$tid', '$ttitle', '$duration', '$aname', '$alid')") === TRUE) {
-                $pesan = "<div class='success-msg'><i class='fa-solid fa-circle-check'></i> Lagu berhasil ditambahkan!</div>";
-            }
-        } catch (mysqli_sql_exception $e) {
-            $pesan = "<div class='error-msg'><i class='fa-solid fa-circle-exclamation'></i> Gagal: " . $conn->error . "</div>";
-        }
-    }
-}
-
-// 5. LOGIKA HAPUS LAGU
 if (isset($_POST['hapus_lagu'])) {
     $tid_hapus = $conn->real_escape_string($_POST['tid_hapus']);
     try {
@@ -83,15 +121,13 @@ if (isset($_POST['hapus_lagu'])) {
     }
 }
 
-// AMBIL DATA STATISTIK
 $jml_user = $conn->query("SELECT COUNT(*) as total FROM User")->fetch_assoc()['total'];
 $jml_lagu = $conn->query("SELECT COUNT(*) as total FROM Track")->fetch_assoc()['total'];
 $jml_album = $conn->query("SELECT COUNT(*) as total FROM Album")->fetch_assoc()['total'];
 
-// AMBIL DATA TABEL
-$result_tracks = $conn->query("SELECT DISTINCT t.tid, t.ttitle, t.aname, a.atitle FROM Track t LEFT JOIN Album a ON t.alid = a.alid ORDER BY t.tid DESC LIMIT 100");
-$result_albums_table = $conn->query("SELECT * FROM Album ORDER BY adate DESC"); // Untuk tabel manajemen album
-$result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY atitle ASC"); // Untuk form input lagu
+$result_tracks = $conn->query("SELECT DISTINCT t.tid, t.ttitle, t.aname, t.alid, a.atitle FROM Track t LEFT JOIN Album a ON t.alid = a.alid ORDER BY t.tid DESC LIMIT 100");
+$result_albums_table = $conn->query("SELECT * FROM Album ORDER BY adate DESC"); 
+$result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY atitle ASC"); 
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -104,7 +140,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-dark: #a29bfe;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
@@ -129,7 +164,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         color: var(--text-main); display: flex; overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR --- */
     .sidebar { 
         width: 300px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
         padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
@@ -153,7 +187,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .logout-btn { margin-top: auto; color: var(--danger) !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER MENU --- */
     .hamburger-menu {
         position: fixed; top: 32px; left: 25px; z-index: 1100;
         background: var(--primary-grad); color: white; border: none;
@@ -164,7 +197,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT --- */
     .main-content { margin-left: 300px; padding: 40px 60px; width: 100%; transition: all 0.4s ease; min-height: 100vh; }
     .main-content.full-width { margin-left: 0; padding-left: 90px; }
     
@@ -177,18 +209,16 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         display: flex; align-items: center; gap: 10px; border: none; letter-spacing: 1px;
     }
 
-    /* --- STATS GRID --- */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
     
     .stat-card { 
         background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
         padding: 25px; border-radius: 20px; 
-        border: 1px solid var(--glass-border); /* Garis bawah tebal dihapus */
+        border: 1px solid var(--glass-border); 
         display: flex; align-items: center; gap: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
-        transition: all 0.3s ease; /* Tambahan transisi biar mulus */
+        transition: all 0.3s ease; 
     }
     
-    /* Efek Hover untuk Kotak Statistik */
     .stat-card:hover {
         transform: translateY(-8px);
         border-color: var(--primary);
@@ -199,8 +229,7 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     .stat-info h3 { font-family: 'Outfit', sans-serif; margin: 0; font-size: 36px; font-weight: 800; line-height: 1; }
     .stat-info p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* --- FORMS --- */
-    .forms-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 50px; }
+    .forms-container { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px; }
     
     .form-box { 
         background: var(--glass-bg); padding: 30px; border-radius: 24px; 
@@ -209,7 +238,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         transition: all 0.3s ease; 
     }
     
-    /* Efek Hover untuk Kotak Form */
     .form-box:hover {
         transform: translateY(-5px);
         border-color: rgba(255, 255, 255, 0.2);
@@ -220,21 +248,16 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     
     .input-group { margin-bottom: 18px; position: relative; }
     .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: var(--text-muted); }
-    .input-group input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 14px; outline: none; transition: 0.3s; font-family: inherit; }
+    .input-group input, .input-group select { width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 14px; outline: none; transition: 0.3s; font-family: inherit; }
     .input-group input::placeholder { color: rgba(255, 255, 255, 0.3); }
-    .input-group input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+    .input-group input:focus, .input-group select:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
+    .input-group select option { background: #0b0f19; color: #fff; }
     
     .btn-submit { background: var(--emerald); color: #000; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; font-size: 15px; width: 100%; margin-top: 10px;}
     .btn-submit:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 206, 201, 0.3); }
     .btn-submit.album-btn { background: var(--primary-grad); color: white; }
     .btn-submit.album-btn:hover { box-shadow: 0 10px 20px rgba(162, 155, 254, 0.3); }
 
-    /* Custom Dropdown */
-    #album_dropdown { background: rgba(11, 15, 25, 0.95) !important; border-color: rgba(255,255,255,0.2) !important; color: #fff; }
-    .album-option { padding: 12px 18px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; transition: 0.2s; }
-    .album-option:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
-
-    /* --- TABEL ADMIN --- */
     .search-box-admin { width: 100%; padding: 16px 25px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 15px; outline: none; transition: 0.3s; margin-bottom: 25px; font-family: inherit; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
     .search-box-admin::placeholder { color: rgba(255, 255, 255, 0.4); }
     .search-box-admin:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 15px rgba(116, 185, 255, 0.1); }
@@ -254,14 +277,12 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
     .btn-edit { background: rgba(116, 185, 255, 0.1); color: var(--primary); border: 1px solid rgba(116, 185, 255, 0.3); padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; margin-right: 8px; font-family: inherit; backdrop-filter: blur(5px);}
     .btn-edit:hover { background: rgba(116, 185, 255, 0.2); color: #fff; border-color: transparent;}
 
-    /* --- MODAL EDIT --- */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
     .modal-box { background: #0b0f19; border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; width: 450px; max-width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; }
     .modal-box h2 { margin-top: 0; color: var(--primary); font-size: 22px; font-family: 'Outfit', sans-serif; margin-bottom: 25px;}
     .btn-close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; transition: 0.3s;}
     .btn-close-modal:hover { color: var(--danger); transform: rotate(90deg);}
 
-    /* --- ALERTS --- */
     .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);}
     .error-msg { background: rgba(255, 71, 87, 0.1); color: var(--danger); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);}
 
@@ -274,7 +295,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         .hamburger-menu { top: 15px; left: 15px; width: 40px; height: 40px; }
         .header { flex-direction: column; align-items: flex-start; gap: 15px; }
         .stats-grid { grid-template-columns: 1fr; }
-        .forms-container { grid-template-columns: 1fr; }
         table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
     }
 </style>
@@ -331,51 +351,52 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
             <div class="form-box album">
                 <h2><i class="fa-solid fa-compact-disc"></i> Tambah Master Album</h2>
                 <form action="" method="POST">
-                    <div class="input-group">
-                        <label>Judul Album</label>
-                        <input type="text" name="atitle" required placeholder="Contoh: Divide">
-                    </div>
-                    <div class="input-group">
-                        <label>Tanggal Rilis</label>
-                        <input type="date" name="adate" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label>Judul Album</label>
+                            <input type="text" name="atitle" required placeholder="Contoh: Divide">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label>Tanggal Rilis</label>
+                            <input type="date" name="adate" required>
+                        </div>
                     </div>
                     <button type="submit" name="tambah_album" class="btn-submit album-btn">Simpan Album</button>
                 </form>
             </div>
 
-            <div class="form-box lagu">
-                <h2><i class="fa-solid fa-music"></i> Tambah Master Lagu</h2>
-                <form action="" method="POST">
+            <div class="form-box upload">
+                <h2><i class="fa-solid fa-cloud-arrow-up"></i> Upload & Tambah Lagu Otomatis (.mp3)</h2>
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: -15px; margin-bottom: 20px;">
+                    Upload file dan otomatis masuk database. Judul lagu akan diambil dari nama file. Maksimal 10 lagu sekaligus.
+                </p>
+                <form action="" method="POST" enctype="multipart/form-data">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="input-group">
-                            <label>Judul Lagu</label>
-                            <input type="text" name="ttitle" required placeholder="Shape of You">
+                            <label>Nama Artis (Untuk semua lagu ini)</label>
+                            <input type="text" name="bulk_aname" required placeholder="Contoh: Ed Sheeran">
                         </div>
                         <div class="input-group">
-                            <label>Nama Artis</label>
-                            <input type="text" name="aname" required placeholder="Ed Sheeran">
-                        </div>
-                    </div>
-                    
-                    <div class="input-group" style="position: relative;">
-                        <label>Pilih Album (Wajib)</label>
-                        <input type="hidden" name="alid" id="selected_alid">
-                        <input type="text" id="album_search" placeholder="🔍 Ketik untuk mencari album..." autocomplete="off" required>
-                        
-                        <div id="album_dropdown" style="display: none; position: absolute; width: 100%; max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 12px; margin-top: 5px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                            <?php
-                            if ($result_albums_dropdown->num_rows > 0) {
+                            <label>Pilih Album (Wajib)</label>
+                            <select name="bulk_alid" required>
+                                <option value="">-- Pilih Album --</option>
+                                <?php
                                 mysqli_data_seek($result_albums_dropdown, 0); 
                                 while($alb = $result_albums_dropdown->fetch_assoc()) {
-                                    echo "<div class='album-option' data-value='" . $alb['alid'] . "'>" . htmlspecialchars($alb['atitle']) . "</div>";
+                                    echo "<option value='" . $alb['alid'] . "'>" . htmlspecialchars($alb['atitle']) . "</option>";
                                 }
-                            } else {
-                                echo "<div style='padding: 12px 15px; color: var(--text-muted); font-size: 13px;'>Belum ada album. Buat album dulu!</div>";
-                            }
-                            ?>
+                                ?>
+                            </select>
                         </div>
                     </div>
-                    <button type="submit" name="tambah_lagu" class="btn-submit">Simpan Lagu</button>
+
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label>Pilih File (Bisa diblok banyak)</label>
+                        <input type="file" name="lagu[]" accept=".mp3,audio/*" multiple required style="padding: 11px 18px; background: rgba(255, 255, 255, 0.05); cursor: pointer;">
+                    </div>
+                    <button type="submit" name="upload_file_lagu" class="btn-submit" style="margin-top: 15px; padding: 13px 25px;">
+                        <i class="fa-solid fa-upload"></i> Mulai Upload & Simpan
+                    </button>
                 </form>
             </div>
         </div>
@@ -428,27 +449,37 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; margin-bottom: 15px; margin-top: 50px;"><i class="fa-solid fa-database"></i> Penelusuran Master Lagu</h2>
         <input type="text" id="searchInput" class="search-box-admin" onkeyup="searchTable()" placeholder="🔍 Ketik Judul Lagu, Nama Artis, atau NAMA ALBUM untuk memfilter...">
 
-        <div class="table-container">
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
             <table id="dataTable">
-                <tr>
-                    <th>No</th>
-                    <th>Judul Lagu</th>
-                    <th>Artis</th>
-                    <th>Bagian Dari Album</th>
-                    <th style="text-align: right;">Aksi</th>
-                </tr>
+                <thead style="position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th>No</th>
+                        <th>Judul Lagu</th>
+                        <th>Artis</th>
+                        <th>Bagian Dari Album</th>
+                        <th style="text-align: right;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
                 <?php
                 if ($result_tracks && $result_tracks->num_rows > 0) {
                     $no = 1;
                     while($row = $result_tracks->fetch_assoc()) {
+                        $safe_tid = htmlspecialchars($row["tid"], ENT_QUOTES);
+                        $safe_ttitle = htmlspecialchars($row["ttitle"], ENT_QUOTES);
+                        $safe_aname = htmlspecialchars($row["aname"], ENT_QUOTES);
+                        $safe_alid = htmlspecialchars($row["alid"] ?? '', ENT_QUOTES);
+                        
                         echo "<tr>";
                         echo "<td><strong style='color: var(--text-muted);'>" . $no++ . "</strong></td>";
-                        echo "<td><strong>" . htmlspecialchars($row["ttitle"]) . "</strong></td>";
-                        echo "<td style='color: var(--text-muted);'>" . htmlspecialchars($row["aname"]) . "</td>";
+                        echo "<td><strong>" . $safe_ttitle . "</strong></td>";
+                        echo "<td style='color: var(--text-muted);'>" . $safe_aname . "</td>";
                         echo "<td><span style='background: rgba(59,113,202,0.1); color: var(--primary); padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;'>" . htmlspecialchars($row["atitle"] ?? 'Tanpa Album') . "</span></td>";
                         
-                        echo "<td style='text-align: right;'>";
-                        echo "<form action='' method='POST' style='margin: 0;'>";
+                        echo "<td style='text-align: right; white-space: nowrap;'>";
+                        echo "<button type='button' class='btn-edit' onclick=\"bukaModalEditLagu('$safe_tid', '$safe_ttitle', '$safe_aname', '$safe_alid')\"><i class='fa-solid fa-pen'></i> Edit</button>";
+                        
+                        echo "<form action='' method='POST' style='display: inline;'>";
                         echo "<input type='hidden' name='tid_hapus' value='" . $row["tid"] . "'>";
                         echo "<button type='submit' name='hapus_lagu' class='btn-delete' onclick=\"return confirm('BAHAYA: Yakin ingin menghapus lagu ini secara permanen dari server?');\"><i class='fa-solid fa-trash'></i> Hapus</button>";
                         echo "</form>";
@@ -459,8 +490,9 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
                     echo "<tr><td colspan='5' style='text-align:center; padding: 30px;'>Belum ada data lagu.</td></tr>";
                 }
                 ?>
-            </table>
-        </div>
+            </tbody>
+                </table>
+            </div>
     </div>
 
     <div class="modal-overlay" id="editModal">
@@ -483,8 +515,39 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
         </div>
     </div>
 
+    <div class="modal-overlay" id="editModalLagu">
+        <div class="modal-box">
+            <button class="btn-close-modal" onclick="tutupModalEditLagu()"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Edit Detail Lagu</h2>
+            <form action="" method="POST">
+                <input type="hidden" name="edit_tid" id="input_edit_tid">
+                
+                <div class="input-group">
+                    <label>Judul Lagu</label>
+                    <input type="text" name="edit_ttitle" id="input_edit_ttitle" required>
+                </div>
+                <div class="input-group">
+                    <label>Nama Artis</label>
+                    <input type="text" name="edit_aname" id="input_edit_aname" required>
+                </div>
+                <div class="input-group">
+                    <label>Pindah ke Album Lain</label>
+                    <select name="edit_alid" id="input_edit_alid_lagu" required>
+                        <option value="">-- Pilih Album --</option>
+                        <?php
+                        mysqli_data_seek($result_albums_dropdown, 0); 
+                        while($alb = $result_albums_dropdown->fetch_assoc()) {
+                            echo "<option value='" . $alb['alid'] . "'>" . htmlspecialchars($alb['atitle']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <button type="submit" name="edit_lagu" class="btn-submit">Simpan Perubahan Lagu</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // --- SCRIPT HAMBURGER PINTAR ---
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
@@ -506,7 +569,6 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
             localStorage.setItem('sidebarState', sidebar.classList.contains('hidden') ? 'hidden' : 'visible');
         }
 
-        // SCRIPT MODAL EDIT ALBUM
         function bukaModalEdit(alid, atitle, adate) {
             document.getElementById('input_edit_alid').value = alid;
             document.getElementById('input_edit_atitle').value = atitle;
@@ -518,51 +580,18 @@ $result_albums_dropdown = $conn->query("SELECT alid, atitle FROM Album ORDER BY 
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // SCRIPT SMART DROPDOWN ALBUM
-        document.addEventListener('DOMContentLoaded', function() {
-            const albumSearch = document.getElementById('album_search');
-            const albumDropdown = document.getElementById('album_dropdown');
-            const selectedAlid = document.getElementById('selected_alid');
-            const albumOptions = document.querySelectorAll('.album-option');
+        function bukaModalEditLagu(tid, ttitle, aname, alid) {
+            document.getElementById('input_edit_tid').value = tid;
+            document.getElementById('input_edit_ttitle').value = ttitle;
+            document.getElementById('input_edit_aname').value = aname;
+            document.getElementById('input_edit_alid_lagu').value = alid;
+            document.getElementById('editModalLagu').style.display = 'flex';
+        }
 
-            if(albumSearch) {
-                albumSearch.addEventListener('focus', function() {
-                    albumDropdown.style.display = 'block';
-                    if (this.value === '') albumOptions.forEach(opt => opt.style.display = 'block');
-                });
+        function tutupModalEditLagu() {
+            document.getElementById('editModalLagu').style.display = 'none';
+        }
 
-                albumSearch.addEventListener('input', function() {
-                    const filter = this.value.toLowerCase();
-                    let hasVisible = false;
-                    albumOptions.forEach(option => {
-                        if (option.textContent.toLowerCase().indexOf(filter) > -1) {
-                            option.style.display = 'block';
-                            hasVisible = true;
-                        } else {
-                            option.style.display = 'none';
-                        }
-                    });
-                    albumDropdown.style.display = hasVisible ? 'block' : 'none';
-                    selectedAlid.value = ''; 
-                });
-
-                albumOptions.forEach(option => {
-                    option.addEventListener('click', function() {
-                        albumSearch.value = this.textContent;
-                        selectedAlid.value = this.getAttribute('data-value');
-                        albumDropdown.style.display = 'none';
-                    });
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (!albumSearch.contains(e.target) && !albumDropdown.contains(e.target)) {
-                        albumDropdown.style.display = 'none';
-                    }
-                });
-            }
-        });
-
-        // SCRIPT PENCARIAN TABEL LAGU BAWAH
         function searchTable() {
             var input, filter, table, tr, tdTitle, tdArtist, tdAlbum, i, txtTitle, txtArtist, txtAlbum;
             input = document.getElementById("searchInput");

@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Cek Login: Kalau nggak ada session, lempar ke login.php
 if (!isset($_SESSION['username'])) { 
     header("Location: login.php"); 
     exit(); 
@@ -10,7 +9,6 @@ include 'koneksi.php';
 $username = $_SESSION['username'];
 $pesan = "";
 
-// 1. AMBIL UID USER (LOGIC PHP ASLI)
 $sql_user = "SELECT uid FROM User WHERE uname='$username'";
 $res_user = $conn->query($sql_user);
 if ($res_user && $res_user->num_rows > 0) {
@@ -20,7 +18,6 @@ if ($res_user && $res_user->num_rows > 0) {
     exit();
 }
 
-// 2. LOGIKA BUAT PLAYLIST BARU
 if (isset($_POST['buat_playlist'])) {
     $ptitle = $conn->real_escape_string(trim($_POST['nama_playlist']));
     $pdate = date('Y-m-d H:i:s'); 
@@ -33,16 +30,13 @@ if (isset($_POST['buat_playlist'])) {
     }
 }
 
-// 3. LOGIKA HAPUS PLAYLIST
 if (isset($_POST['hapus_playlist'])) {
     $pid_hapus = $conn->real_escape_string($_POST['pid_hapus']);
-    // Hapus isinya dulu baru playlistnya (Foreign Key Safety)
     $conn->query("DELETE FROM playlistcontain WHERE pid='$pid_hapus'");
     $conn->query("DELETE FROM playlist WHERE pid='$pid_hapus' AND uid='$uid'");
     $pesan = "<div class='error-msg'><i class='fa-solid fa-trash'></i> Playlist telah dihapus dari koleksi.</div>";
 }
 
-// 4. AMBIL DAFTAR PLAYLIST UNTUK DITAMPILKAN
 $sql_tampil = "SELECT p.*, 
               (SELECT t.ttitle FROM playlistcontain pc 
                JOIN Track t ON pc.tid = t.tid 
@@ -61,7 +55,6 @@ $result_playlist = $conn->query($sql_tampil);
     
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -82,7 +75,6 @@ $result_playlist = $conn->query($sql_tampil);
         color: var(--text-main); display: flex; overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR (SINKRON DENGAN INDEX) --- */
     .sidebar { 
         width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
         padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
@@ -112,7 +104,6 @@ $result_playlist = $conn->query($sql_tampil);
 
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER MENU (POSISI SAMA DENGAN INDEX) --- */
     .hamburger-menu {
         position: fixed; top: 32px; left: 25px; z-index: 1100;
         background: var(--primary-grad); color: white; border: none;
@@ -123,7 +114,6 @@ $result_playlist = $conn->query($sql_tampil);
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT --- */
     .main-content { 
         margin-left: 280px; padding: 40px 60px; width: 100%;
         transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
@@ -135,7 +125,6 @@ $result_playlist = $conn->query($sql_tampil);
     .header { margin-bottom: 30px; margin-top: 10px; }
     .header h2 { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; }
 
-    /* --- FORM BUAT PLAYLIST --- */
     .form-box { 
         background: var(--glass-bg); padding: 30px; border-radius: 24px; 
         border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
@@ -156,7 +145,6 @@ $result_playlist = $conn->query($sql_tampil);
     }
     .btn-create:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 206, 201, 0.3); }
 
-    /* --- GRID PLAYLIST --- */
     .playlist-grid { 
         display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
         gap: 30px; margin-bottom: 100px;
@@ -172,7 +160,6 @@ $result_playlist = $conn->query($sql_tampil);
     
     .playlist-img { width: 100%; height: 200px; object-fit: cover; }
     
-    /* Ikon kosong dibikin transparan di dark mode */
     .playlist-icon-empty { 
         width: 100%; height: 200px; background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); 
         display: flex; align-items: center; justify-content: center; font-size: 60px; 
@@ -182,7 +169,6 @@ $result_playlist = $conn->query($sql_tampil);
     .playlist-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .playlist-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-    /* --- TOMBOL HAPUS --- */
     .btn-delete-pl { 
         position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); 
         color: #ff6b81; border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 50%; width: 35px; height: 35px; 
@@ -190,7 +176,6 @@ $result_playlist = $conn->query($sql_tampil);
     }
     .btn-delete-pl:hover { background: #ff6b81; color: white; transform: scale(1.1); border-color: transparent; }
 
-    /* --- ALERTS --- */
     .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
     .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; gap: 10px; font-weight: 500; backdrop-filter: blur(5px); }
 
@@ -238,16 +223,13 @@ $result_playlist = $conn->query($sql_tampil);
                     while($row = $result_playlist->fetch_assoc()) {
                         echo "<div class='playlist-wrapper'>";
                         
-                        // Tombol Hapus (Floating)
                         echo "<form action='' method='POST' style='margin:0;'>";
                         echo "<input type='hidden' name='pid_hapus' value='" . $row["pid"] . "'>";
                         echo "<button type='submit' name='hapus_playlist' class='btn-delete-pl' onclick=\"return confirm('Hapus playlist ini?');\"><i class='fa-solid fa-trash'></i></button>";
                         echo "</form>";
 
-                        // Link ke View Playlist
                         echo "<a href='view_playlist.php?pid=" . $row["pid"] . "' class='playlist-card'>";
                         
-                        // Gambar Unik pakai PID
                         if (!empty($row['sample_track'])) {
                             echo "<img src='https://picsum.photos/seed/playlist_" . $row['pid'] . "/300/300' class='playlist-img' alt='Cover'>";
                         } else {
@@ -270,18 +252,14 @@ $result_playlist = $conn->query($sql_tampil);
     </div>
 
     <script>
-        // --- SCRIPT SIDEBAR ANTI PELUPA ---
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
-    const state = localStorage.getItem('sidebarState'); // Cek ingatan browser
-    
-    // Kalau buka di HP, otomatis tutup sidebar biar layar lega
+    const state = localStorage.getItem('sidebarState'); 
     if (window.innerWidth <= 768) {
         sidebar.classList.add('hidden');
         mainContent.classList.add('full-width');
     } 
-    // Kalau di laptop dan ingatan terakhirnya 'tertutup'
     else if (state === 'hidden') {
         sidebar.classList.add('hidden');
         mainContent.classList.add('full-width');
@@ -295,7 +273,6 @@ function toggleSidebar() {
     sidebar.classList.toggle('hidden');
     mainContent.classList.toggle('full-width');
     
-    // Simpan status ke ingatan browser (Local Storage)
     if (sidebar.classList.contains('hidden')) {
         localStorage.setItem('sidebarState', 'hidden');
     } else {

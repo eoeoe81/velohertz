@@ -14,7 +14,6 @@ if (!isset($_GET['alid'])) {
 $alid = $conn->real_escape_string($_GET['alid']);
 $username = $_SESSION['username'];
 
-// --- 1. AMBIL INFO ALBUM (PHP ASLI) ---
 $sql_album = "SELECT * FROM Album WHERE alid='$alid'";
 $result_album = $conn->query($sql_album);
 if ($result_album->num_rows == 0) { 
@@ -23,7 +22,6 @@ if ($result_album->num_rows == 0) {
 }
 $album = $result_album->fetch_assoc();
 
-// --- 2. LOGIKA RADAR GAMBAR (PHP ASLI) ---
 $sql_all = "SELECT DISTINCT a.alid FROM Album a INNER JOIN Track t ON a.alid = t.alid LIMIT 20";
 $res_all = $conn->query($sql_all);
 $cover_number = 1; 
@@ -38,7 +36,6 @@ if ($res_all) {
 $cover_path = "albums/" . $cover_number . ".jpg";
 $img_src = file_exists($cover_path) ? $cover_path : "https://picsum.photos/seed/album_" . $alid . "/400/400";
 
-// --- 3. AMBIL DAFTAR LAGU (PHP ASLI) ---
 $sql_tracks = "SELECT * FROM Track WHERE alid='$alid'";
 $result_tracks = $conn->query($sql_tracks);
 ?>
@@ -53,7 +50,6 @@ $result_tracks = $conn->query($sql_tracks);
     
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -73,7 +69,6 @@ $result_tracks = $conn->query($sql_tracks);
         background-attachment: fixed; color: var(--text-main); display: flex; overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR (SINKRON 260PX) --- */
     .sidebar { 
         width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
         padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
@@ -93,7 +88,6 @@ $result_tracks = $conn->query($sql_tracks);
     .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER --- */
     .hamburger-menu { 
         position: fixed; top: 32px; left: 25px; z-index: 1100; 
         background: var(--primary-grad); color: white; border: none; 
@@ -103,7 +97,6 @@ $result_tracks = $conn->query($sql_tracks);
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT --- */
     .main-content { margin-left: 280px; padding: 40px 60px; width: 100%; transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh; }
     .main-content.full-width { margin-left: 0; padding-left: 90px; }
     .content-container { max-width: 1100px; margin: 0 auto; }
@@ -111,7 +104,6 @@ $result_tracks = $conn->query($sql_tracks);
     .back-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 25px; color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; opacity: 0.8; }
     .back-link:hover { opacity: 1; transform: translateX(-5px); }
 
-    /* --- HERO ALBUM HEADER --- */
     .album-hero {
         display: flex; 
         align-items: center; 
@@ -138,7 +130,6 @@ $result_tracks = $conn->query($sql_tracks);
     .album-hero-text h1 { font-family: 'Outfit', sans-serif; font-size: 42px; margin: 0; line-height: 1.1; letter-spacing: -1.5px; color: var(--text-main); }
     .album-hero-text p { color: var(--text-muted); font-size: 15px; margin-top: 8px; }
 
-    /* --- TABLE STYLE --- */
     table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-bottom: 100px; }
     th { text-align: left; padding: 10px 20px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; font-weight: 700; }
     td { padding: 15px 20px; background: var(--glass-bg); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); font-size: 15px; color: var(--text-main); }

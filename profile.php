@@ -10,7 +10,6 @@ $target_dir = "profiles/";
 $foto_profil = $target_dir . $username . ".jpg";
 $foto_default = "https://ui-avatars.com/api/?name=" . urlencode($username) . "&background=3b71ca&color=fff&size=200";
 
-// 1. LOGIKA HAPUS FOTO (PHP ASLI)
 if (isset($_POST['hapus_foto'])) {
     if (file_exists($foto_profil)) {
         unlink($foto_profil); 
@@ -20,7 +19,6 @@ if (isset($_POST['hapus_foto'])) {
     }
 }
 
-// 2. LOGIKA UPLOAD FOTO (PHP ASLI)
 if (isset($_POST['upload_foto'])) {
     $tipe_file = strtolower(pathinfo($_FILES["fileToUpload"]["name"], PATHINFO_EXTENSION));
     $ukuran_file = $_FILES["fileToUpload"]["size"];
@@ -51,7 +49,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     :root {
-        /* Warna Gen-Z Dark Mode */
         --primary: #74b9ff;
         --primary-grad: linear-gradient(135deg, #3b71ca 0%, #a29bfe 100%);
         --app-bg-color: #0b0f19;
@@ -75,7 +72,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
         overflow-x: hidden; 
     }
 
-    /* --- SIDEBAR (SINKRON 260PX) --- */
     .sidebar { 
         width: 260px; background: rgba(20, 25, 35, 0.4); backdrop-filter: blur(20px); 
         padding: 32px 20px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; 
@@ -95,7 +91,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     .sidebar a:hover, .sidebar a.active { background: var(--glass-bg); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .logout-btn { margin-top: auto; color: #ff6b81 !important; background: rgba(255, 71, 87, 0.1) !important;}
 
-    /* --- HAMBURGER (SINKRON POSISI) --- */
     .hamburger-menu {
         position: fixed; top: 32px; left: 25px; z-index: 1100;
         background: var(--primary-grad); color: white; border: none;
@@ -106,7 +101,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     }
     .hamburger-menu:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-    /* --- MAIN CONTENT (ANTI LENGKET) --- */
     .main-content { 
         margin-left: 260px; padding: 40px 60px; width: 100%;
         transition: all 0.4s ease; box-sizing: border-box; min-height: 100vh;
@@ -114,7 +108,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     }
     .main-content.full-width { margin-left: 0; padding-left: 90px; }
 
-    /* --- PROFILE CARD (DARK MODE) --- */
     .profile-card { 
         background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         border-radius: 30px; border: 1px solid var(--glass-border); 
@@ -129,7 +122,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     .profile-card h1 { font-family: 'Outfit', sans-serif; margin: 0 0 5px 0; font-size: 32px; color: var(--text-main); font-weight: 800; }
     .profile-card p.subtitle { margin: 0 0 30px 0; color: var(--primary); font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8;}
 
-    /* Style form pisahannya biar gelap nyatu */
     form[action=""] { border-bottom-color: rgba(255,255,255,0.05) !important; }
 
     .btn-upload { 
@@ -152,7 +144,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
         background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px; 
         border: 1px solid var(--glass-border); width: 100%; font-size: 13px; color: var(--text-main);
     }
-    /* Biar tombol 'Choose File' bawaan browser ikut styling dark mode */
     input[type="file"]::-webkit-file-upload-button {
         background: rgba(255, 255, 255, 0.1); color: var(--text-main);
         border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 12px;
@@ -160,7 +151,6 @@ $img_src = file_exists($foto_profil) ? $foto_profil . "?t=" . time() : $foto_def
     }
     input[type="file"]::-webkit-file-upload-button:hover { background: rgba(255, 255, 255, 0.2); }
 
-    /* --- ALERTS --- */
     .success-msg { background: rgba(0, 206, 201, 0.1); color: var(--emerald); padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(0, 206, 201, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; backdrop-filter: blur(5px); }
     .error-msg { background: rgba(255, 71, 87, 0.1); color: #ff6b81; padding: 15px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 71, 87, 0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; backdrop-filter: blur(5px); }
 
